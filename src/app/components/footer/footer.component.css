@@ -1,0 +1,99 @@
+.bg-img{
+    background-image: url(https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhUsfo4dH3gd_p8m1EhJ_cmjquCAh9oOKMHm7Oqwr5iEWVNNrgDIfhRl_9OwLvwaZuq6UrQAou-4CAOJuSFZfJhJSaSvNZHzZ5Lg_GiO14rrBo2hmrA8Beg0EtF7yXloflEscyL6c2SJ9pTP_vL6kApBmR7c0C-nPNM3xBwptaeyGBGKLPkb0g5zsxlF7o/s1025/IMG-20240717-WA0015.jpg);
+    background-size: cover;
+    height: 100%;
+    width: auto;
+    background-position: center;
+}
+.mat-mdc-form-field {
+  margin: 0px 0px 0px 10px !important;
+}
+.descrip-lotery{
+    font-weight: 900;
+}
+.descrip-lotery p{
+    margin-bottom: 3px;
+}
+.title-text{
+    font-weight: 900;
+    font-size: 50px;
+    line-height: 1;
+    margin-bottom: 0;
+    padding-bottom: 10px;
+}
+p.lead {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 0px;
+}
+.boletos-lead{
+    font-size: 30px;
+    font-weight: 800;
+}
+.hour{
+    display: flex;
+    
+}
+.hour p{
+  font-size: 16px;
+  font-weight: 800;
+}
+.mat-stepper-vertical {
+    margin-top: 8px;
+  }
+  
+  .mat-mdc-form-field {
+    margin-top: 16px;
+  }
+  .example-container mat-form-field + mat-form-field {
+    margin-left: 8px;
+  }
+  .mat-mdc-chip-set {
+    max-width: 200px;
+  }
+
+  .d-blog{
+    display: inline-block;
+  }
+  .numer-seleccionado{
+    font-weight: 900;
+    font-size: 28px;
+  }
+  img.cursor-pointer {
+    cursor: pointer;
+  }
+
+  .bg-bancos{
+    border: 1px solid;
+    color: white;
+    opacity: 1;
+    transition: 0.3s;
+  }
+
+  .bg-Nobancos{
+    opacity: 0.6;
+  }
+
+  
+
+
+.demo-table {
+    width: 100%;
+  }
+  
+  .mat-mdc-cell  {
+    border-bottom: 1px solid transparent;
+    border-top: 1px solid transparent;
+    cursor: pointer;
+    text-align: center;
+  }
+  
+  .mat-mdc-cell:hover {
+    border: 1px solid;
+  }
+  
+  .demo-row-is-clicked {
+    font-weight: bold;
+  }
+  
+  

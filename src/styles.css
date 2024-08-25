@@ -1,0 +1,60 @@
+/* You can add global styles to this file, and also import other style files */
+/* @import "../node_modules/alertifyjs/build/css/alertify.css";
+@import "../node_modules/alertifyjs/build/css/themes/bootstrap.min.css";
+@import "../node_modules/alertifyjs//build/css/themes/default.min.css"; */
+
+@import '~alertifyjs/build/css/alertify.min.css';
+@import '~alertifyjs/build/css/themes/default.min.css';
+
+html, body { height: 100%; }
+body { margin: 0; font-family: 'Poppins', sans-serif; }
+
+
+.btn-lottery {
+    background-color: #ffa200;
+    border-color: #ffa200;
+    box-shadow: 0 0 18px #ffa200;
+    font-size: 18px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #fff;
+    padding: 12px 40px !important;
+    border-radius: 100px;
+  }
+  footer {
+    background-color: #fb6001;
+  }
+.title-loterry{
+  font-weight: bold;
+}
+.cursor-pointer{
+  cursor: pointer;
+}
+.w-20{
+  width: 20%;
+}
+.color-lottery{
+  color: #ffa200;
+}
+.fx-14{
+  font-size: 14px;
+}
+.fx-10{
+  font-size: 10px;
+}
+.fx-30{
+  font-size: 30px;
+}
+
+.w-15{
+  width: 15%;
+}
+
+.w-80{
+  width: 80%;
+}
+
+.pr-0 {
+  padding-right: 0;
+}

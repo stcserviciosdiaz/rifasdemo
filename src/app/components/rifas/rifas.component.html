@@ -1,0 +1,319 @@
+<app-faqs></app-faqs>
+
+
+
+<div class="container">
+    <div class="d-md-flex flex-md-equal w-100 my-md-3 ps-md-3">
+      <div class="col-12 col-md-6 bg-dark me-md-3 text-white overflow-hidden"
+      *ngFor="let rifaoff of imagendelarifa">
+        <div class="bg-img">
+          <img 
+            class="cursor-pointer bg-img"
+            src="../../../assets/images/{{ rifaoff.imagen }}" alt=""> 
+        </div>
+      </div>
+      <div class="col-12 col-md-6 bg-light me-md-3 pt-3 px-3 px-md-5 overflow-hidden">
+        <div class="my-3 p-3">
+          <div class="display-5 hour">
+            <p class="fx-30">
+              <i class="fa fa-calendar-o countdown-timer" aria-hidden="true"></i>
+              Fecha 08:00 PM
+            </p>     
+          </div>
+          
+          <div class="progress">
+            <div class="progress-bar progress-bar-striped bg-warning" 
+                 role="progressbar" 
+                 [style.width.%]="progressPercentage" 
+                 aria-valuemin="0" 
+                 aria-valuemax="100">
+              {{progressPercentage.toFixed(0)}}%
+            </div>
+          </div>
+
+          <h2 class="display-5 title-text color-lottery pt-2">
+            Demo Rifa de Prueba 1000
+          </h2>
+          <p class="lead">Aquí va su descripción, en este ejemplo son:</p>
+          <h5 class="boletos-lead">1000 Boletos</h5>
+          <div class="descrip-lotery">
+            <p> 🥇Primer Premio: Moto 🏍️ </p>
+            <p> 🥈Segundo Lugar: iPhone 📱 </p>
+            <p> 🥉Tercer Premio: Efectivo 💴 </p>
+
+            <p> 🔹 Descuentos Activados</p>
+            <p> 🔹 Promoción 3x2 Activada</p><br>
+
+            <p> 🗓️ Fecha: 30 de Diciembre</p>
+            <p> 🎥 Transmisión en vivo: 🕓 8:00 pm</p><br>
+
+            <p> ¿Cómo funciona? 🍀</p>
+            <p> 🔹 Se eligen los boletos 🎟</p>
+            <p> 🔹 Se llenan los datos.</p>
+            <p> 🔹 Se realiza el registro. </p>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+
+<div class="bg-light rounded mt-3 pt-4">
+  <div class="text-center">
+    <h3 class="title-loterry color-lottery">
+      <i class="fa fa-list-ol" aria-hidden="true"></i> 
+      LISTA DE BOLETOS
+    </h3>
+    <p><i class="fa fa-info-circle"></i> Min. 2 tickets por compra</p>
+    <p class="lead pb-4">¡Experimenta la Fiebre de Premios en Nuestra Gran Rifa de Apertura! Gana Motos, Teléfonos y Premios en Efectivo!.</p>
+  </div>
+  <div class="container">
+    <table class="table" >
+      <tbody>
+        <tr>
+          <th class="col-md-1 col-2 d-blog text-center cursor-pointer" 
+              *ngFor="let item of items"
+              [ngClass]="{'disabled': isDisabled(item.id)}"
+              (click)="elegirnumero(item.id, item.price)"
+              [class.selected]="numeroelegido.includes(item.id)">
+              <input
+                  [disabled]="isDisabled(item.id)"
+                  class="d-none"
+                  [checked]="numeroelegido.includes(item.id)"
+                  type="checkbox">
+                  
+              {{item.id}}
+          </th>
+        </tr>
+      </tbody>
+    </table>
+    <div class="text-center">
+      <h3 class="title-loterry">
+        <i class="fa fa-check-circle" aria-hidden="true"></i> 
+        Seleccionados
+      </h3>
+      <div>
+        <p *ngIf="numeroelegido.length === 0">No hay Números seleccionados.</p>
+        <div class="columna-lottery">
+          <div class="w-20" *ngFor="let n of numeroelegido">
+            <p class="items-numeros">{{ n }} </p>
+          </div>
+        </div>
+      </div>
+      <div class="title-loterry">
+        <p class="title-price">Total: $  {{ getTotalPrice() }}</p>
+        <em>Precio de Boleto</em><s> $2</s>
+      </div>
+    </div>
+  </div>
+</div>
+
+ 
+
+<div class="container text-center">
+  <form class="contact-form" [formGroup]="userForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="col-12 pt-4 pb-3">
+      <h3 class="title-loterry color-lottery">
+        <i class="fa fa-user-circle" aria-hidden="true"></i> 
+        DATOS PERSONALES
+      </h3>
+      <div class="row">
+        <div class="col-md-6">
+          <label class="form-label">Nombres y Apellidos *</label>
+            <input 
+            type="text" 
+            class="form-control" 
+            formControlName="nombre"
+            placeholder="Nombres y Apellidos" 
+            required>
+            <div class="alert alert-danger mt-2" 
+              *ngIf="this.userForm.get('nombre')?.errors?.['required']" [hidden]="nombre.valid || nombre.pristine">
+              (El nombre no puede quedar vacío)
+            </div>
+        </div>
+        <div class="col-md-6">
+          <label  class="form-label">Celular *</label>
+
+          <div class="d-flex">
+            <select class="form-select w-20" formControlName="codigoArea">
+              <option value="" disabled selected>+00</option>
+              <option *ngFor="let codigo of codigosDeArea" [value]="codigo">{{ codigo }}</option>
+            </select>
+  
+            <input type="text" 
+              formControlName="celular"
+              class="form-control w-100"  
+              placeholder="Celular"
+              required>
+          </div>
+
+             <!-- Validaciones -->
+             <div class="alert alert-danger" *ngIf="celular?.invalid && (celular?.dirty || celular?.touched)">
+              <small  *ngIf="celular?.errors?.['required']">Se requiere número de teléfono.</small>
+              <small  *ngIf="celular?.errors?.['pattern']">Formato de número de teléfono no válido.</small>
+            </div>
+            <div class="alert alert-danger mt-2" *ngIf="codigoArea?.invalid && (codigoArea?.dirty || codigoArea?.touched)">
+              <small>Debes seleccionar un código de área.</small>
+            </div>
+
+           
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="col-12 pt-3 pb-3">
+      <h3 class="title-loterry mb-0 color-lottery">
+        <i class="fa fa-credit-card-alt" aria-hidden="true"></i> 
+        MODOS DE PAGO
+      </h3>
+      <em class="pb-4">Transferencia o depósito</em>
+      <div class="row col-12 mx-auto justify-content-center pt-2">
+        <div class="col-md-8 row">
+          <div class="btn-group col" role="group" aria-label="Basic radio toggle button group"
+              *ngFor="let bancoelegido of listadebancos"
+              [ngClass]="getClassbancoelegido(bancoelegido.id)">
+              
+              <input 
+                type="radio" 
+                class="btn-check"
+                name="btnradio" 
+                id="btnradio{{bancoelegido.id}}"
+                autocomplete="off" 
+                [checked]="bancoelegidoId === bancoelegido.id">
+                
+                <label 
+                for="btnradio{{bancoelegido.id}}"
+                (click)="elegirbancos(bancoelegido.id)"
+                [style.opacity]="bancoelegidoId === bancoelegido.id ? 1 : 0.5">
+                
+                <img 
+                class="cursor-pointer img-bancos"
+                style="border-radius: 20%; width: 45%;"
+                src="../../../assets/images/{{bancoelegido.imagen}}" 
+                alt="{{bancoelegido.banco}}">
+                
+                <div *ngIf="bancoelegidoId === bancoelegido.id">
+                  <p class="fx-14 mb-0 pt-2">
+                    {{bancoelegido.banco}}
+                  </p>
+                  <p class="fuente-banco mb-0">
+                    <em class="fx-10">NRO DE CUENTA</em><br>
+                    {{bancoelegido.numero}}
+                  </p>
+                  <p class="fuente-banco">
+                    <em class="fx-10">TITULAR DE CUENTA</em><br>
+                    {{bancoelegido.titular}}
+                  </p>
+                </div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 pt-4 pb-3">
+      <h3 class="title-loterry color-lottery">
+        <i class="fa fa-user-circle" aria-hidden="true"></i> 
+        COMPROBANTE DE BOLETO
+      </h3>
+      <div class="row">
+        <div class="col-md-6 mx-auto">
+          <button 
+            type="submit" 
+            class="btn btn-lottery" 
+            data-bs-toggle="modal"
+            [disabled]="isButtonDisabled" 
+            data-bs-target="#exampleModal">
+              Confirmar
+          </button> 
+        </div>
+        <div *ngIf="submitMessage" class="contact-result pt-3 mt-4">Gracias por participar, Muchas suerte... </div>
+        <div *ngIf="showNumberMessage" class="contact-result pt-3 alert alert-danger">{{ numberMessage }}</div>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+
+
+<div class="container boleto-word" *ngIf="isUser" >
+  <div id="ID_DIV">
+    <h3 class="title-loterry pt-4 color-lottery">BOLETO DE USUARIO</h3>
+    <div class="row col-12">
+      <div class="col-6" *ngFor="let rifaoff of imagendelarifa">
+        <img
+          style="width: 100%; height: 300px;" 
+          class="cursor-pointer bg-img"
+          src="../../../assets/images/{{ rifaoff.imagen }}" alt="">
+      </div>
+      <div class="text-align-left col-6">
+        <p class="title-loterry">Rifa Nª.:<em style="font-weight: 200;">#0001</em></p>
+        <p class="title-loterry">Fecha de Sorteo.:</p>
+        <p class="title-loterry">Nombres.: <em style="font-weight: 200;">{{ userForm.get('nombre')?.value }}</em></p>
+        <p class="title-loterry">Celular.: <em style="font-weight: 200;">{{ userForm.get('celular')?.value }}</em></p>
+        <p class="title-loterry">Números reservados.: <em style="font-weight: 200;">{{ numeroelegido }}</em></p>
+        <p class="title-loterry">Precio por número.: <em style="font-weight: 200;">$2</em></p>
+        <p class="title-loterry">Precio Total.:<em style="font-weight: 200;">{{ getTotalPrice() }}</em></p>
+      </div>
+    </div>
+  </div>
+  <div class="text-center pt-4">
+    <a type="button"
+           class="btn-lottery" 
+           onclick="javascript:window.printDiv('ID_DIV');">
+      <i class="fa fa-print title-loterry" aria-hidden="true"> Imprimir Boleto</i>
+    </a>
+  </div>  
+</div>
+
+
+<app-footer></app-footer>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 
+          class="modal-title" 
+          id="exampleModalLabel">
+          ¡Ya estas a pocos paso! {{ userForm.value.nombre | json }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Tus Boletos números {{ numeroelegido | json }} fueron registrados correctamente!</p>
+        <p>El evento se transmitirá el día 30 DIC 2024 a las 08:00 PM en nuestro canal.</p>
+        <p *ngIf="bancoelegido">
+        Realiza tu pago directamente en nuestra cuenta bancaria elegida: <br>
+          Nombre de Banco:
+          <strong>{{ bancoelegido.banco }}</strong><br>
+          Número de Cuenta: 
+          <strong>{{ bancoelegido.numero }}</strong><br>
+          Titular de la Cuenta: 
+          <strong>{{ bancoelegido.titular }}</strong>
+        </p>
+          <p>Por favor, usa el número del pedido como referencia de pago.</p>
+          <p><strong>Debes enviar el comprobante de pago vía Whatsapp a Soporte +322323232323</strong></p>
+          <p>Si no envías el pago dentro de las 24 horas, tus números de boletos serán liberados automáticamente.</p>
+          <a 
+            class="btn btn-success"
+            [href]="generarEnlaceWhatsApp()"
+            target="_blank">
+            Enviar por WhatsApp
+          </a>
+      </div>
+      <div class="modal-body" *ngIf="!numeroelegido">
+        No has elegido un numero<br>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>

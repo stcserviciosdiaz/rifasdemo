@@ -1,0 +1,44 @@
+.container {
+    width: 60%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+mat-accordion {
+    margin-top: 50px;
+    width: 100%;
+}
+.navbar-dark .navbar-toggler {
+    float: right;
+}
+.navbar {
+    padding-bottom: 0px;
+    padding-top: 0px;
+}
+
+.img-responsive {
+    width: 50%;
+}
+
+button.navbar-toggler {
+    margin-top: 10%;
+}
+
+.navbar {
+    border-top: 8px solid #ffa200;
+    border-bottom: 8px solid #ffa200;
+}
+
+@media only screen and (max-width: 475px){
+    button.navbar-toggler.collapsed {
+        margin-top: 20%;
+    }
+    button.navbar-toggler {
+        margin-top: 20%;
+    }
+    .img-responsive {
+        width: 100%;
+    }
+}

@@ -1,0 +1,196 @@
+.bg-img{
+  height: 650px;
+  width: 100%;
+}
+.text-align-left{
+  text-align: left;
+}
+.mat-mdc-form-field {
+  margin: 0px 0px 0px 10px !important;
+}
+.descrip-lotery{
+    font-weight: 900;
+}
+.descrip-lotery p{
+    margin-bottom: 3px;
+}
+.title-text{
+    font-weight: 900;
+    font-size: 50px;
+    line-height: 1;
+    margin-bottom: 0;
+    padding-bottom: 10px;
+}
+p.lead {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 0px;
+}
+.boletos-lead{
+    font-size: 30px;
+    font-weight: 800;
+}
+.hour{
+    display: flex;
+}
+.hour p{
+  font-weight: 800;
+}
+.mat-stepper-vertical {
+    margin-top: 8px;
+  }
+  
+  .mat-mdc-form-field {
+    margin-top: 16px;
+  }
+  .example-container mat-form-field + mat-form-field {
+    margin-left: 8px;
+  }
+  .mat-mdc-chip-set {
+    max-width: 200px;
+  }
+
+  .d-blog{
+    display: inline-block;
+  }
+  .numer-seleccionado{
+    font-weight: 900;
+    font-size: 28px;
+  }
+  img.cursor-pointer {
+    cursor: pointer;
+  }
+
+  .bg-bancos{
+    border: 1px solid;
+    color: white;
+    opacity: 1;
+    transition: 0.3s;
+  }
+
+  .bg-Nobancos{
+    opacity: 0.6;
+  }
+
+  th {
+    opacity: 1;
+    transition: 0.3s;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #252525;
+    line-height: 27px;
+    padding: 2px 2px 2px;
+    border-radius: 10px;
+    background-color: #f6f6f6;
+    position: relative;
+  }
+
+  th.selected {
+    border: 1px solid #e11300;
+    opacity: 1;
+    transition: 0.3s;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #252525;
+    line-height: 27px;
+    padding: 2px 2px 2px;
+    border-radius: 10px;
+    background-color: #f6f6f6;
+    position: relative;
+  }
+
+.boleto-word{
+  width: 500px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  text-align: center;
+} 
+
+
+.demo-table {
+    width: 100%;
+  }
+  
+  .mat-mdc-cell  {
+    border-bottom: 1px solid transparent;
+    border-top: 1px solid transparent;
+    cursor: pointer;
+    text-align: center;
+  }
+  
+  .mat-mdc-cell:hover {
+    border: 1px solid;
+  }
+  
+  .demo-row-is-clicked {
+    font-weight: bold;
+  }
+
+  .title-price{
+    font-size: 28px;
+    font-weight: 900;
+  }
+
+ 
+.items-numeros{
+  background-color: #ffa200;
+  border-color: #ffa200;
+  box-shadow: 0 0 18px #ffa200;
+  font-size: 18px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #fff;
+  padding: 10px 25px !important;
+  border-radius: 100px;
+}
+
+.columna-lottery{
+  justify-content: center;
+  -moz-justify-content: center;
+  -webkit-justify-content: center;
+  -o-justify-content: center;
+  -ms-justify-content: center;
+  display: ruby-text;
+  -moz-display: ruby-text; /* Firefox */
+  -webkit-display: ruby-text; /* Safari y Chrome */
+  -o-display: ruby-text; /* Opera */
+  -ms-display: ruby-text; /* Internet Explorer y Microsoft Edge */
+}
+
+.disabled {
+  background-color: rgb(255 162 0 / 80%);
+  color: #721c24;
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.selected {
+  opacity: 1;
+}
+
+.not-selected {
+  opacity: 0.5;
+}
+
+.fuente-banco{
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.countdown-timer {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.countdown-timer h2 {
+  font-size: 2rem;
+  color: #ff0000;
+}
+
+
+
+  
+  
+  
