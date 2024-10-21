@@ -6,6 +6,8 @@
     justify-content: center;
 }
 
+
+
 mat-accordion {
     margin-top: 50px;
     width: 100%;
@@ -18,12 +20,12 @@ mat-accordion {
     padding-top: 0px;
 }
 
-.img-responsive {
-    width: 50%;
+img.logo-rifa {
+    width: 40%;
 }
 
 button.navbar-toggler {
-    margin-top: 10%;
+    margin-top: 8%;
 }
 
 .navbar {
@@ -38,7 +40,10 @@ button.navbar-toggler {
     button.navbar-toggler {
         margin-top: 20%;
     }
-    .img-responsive {
-        width: 100%;
+    img.logo-rifa {
+        width: 40%;
+    }
+    button.col-md-6.col-12.navbar-toggler.collapsed {
+        margin-top: 0;
     }
 }

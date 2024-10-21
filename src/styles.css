@@ -10,6 +10,22 @@ html, body { height: 100%; }
 body { margin: 0; font-family: 'Poppins', sans-serif; }
 
 
+.btn-search{
+  padding: 10px 10px 6px 10px;
+  border-radius: 0;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 20px;
+}
+
+
+.btn-lottery:hover {
+  background-color: #ffd180;
+}
+.btn-lottery a:hover {  
+  color: #000000 !important;
+}
+
 .btn-lottery {
     background-color: #ffa200;
     border-color: #ffa200;
@@ -21,7 +37,26 @@ body { margin: 0; font-family: 'Poppins', sans-serif; }
     color: #fff;
     padding: 12px 40px !important;
     border-radius: 100px;
-  }
+}
+
+.btn-activa{
+  padding: 5px 20px 5px 20px;
+  background-color: #ffa200;
+  border-radius: 18px;
+  position: absolute;
+  top: 20px;
+  color: white;
+}
+
+.btn-finalizado {
+  padding: 5px 20px 5px 20px;
+  background-color: #000000;
+  border-radius: 18px;
+  position: absolute;
+  top: 20px;
+  color: white;
+}
+
   footer {
     background-color: #fb6001;
   }
@@ -39,6 +74,9 @@ body { margin: 0; font-family: 'Poppins', sans-serif; }
 }
 .fx-14{
   font-size: 14px;
+}
+.fx-16{
+  font-size: 16px;
 }
 .fx-10{
   font-size: 10px;
