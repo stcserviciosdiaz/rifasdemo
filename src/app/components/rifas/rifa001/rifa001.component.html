@@ -20,7 +20,6 @@
               Fecha 08:00 PM
             </p>     
           </div>
-          
           <div class="progress">
             <div class="progress-bar progress-bar-striped bg-warning" 
                  role="progressbar" 
@@ -52,10 +51,55 @@
             <p> 🔹 Se llenan los datos.</p>
             <p> 🔹 Se realiza el registro. </p>
           </div>
-          <button class="navbar-toggler btn-search btn-lottery mt-4" type="button">
+          <!-- Button trigger modal -->
+          <button class="navbar-toggler btn-search btn-lottery mt-4" type="button" 
+           data-bs-toggle="modal" data-bs-target="#searchtickets">
             <i class="fa fa-search" aria-hidden="true"></i>
             Verificador de Boletos
           </button>
+
+          <!-- Modal -->
+          <div class="modal fade" id="searchtickets" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content px-3">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Buscar compras</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- Formulario para Buscar Boleto -->
+                <p>Ingrese su número de Celular</p>  
+                <form [formGroup]="form" (ngSubmit)="getRaffleData(); $event.preventDefault();" class="d-flex">
+                  <input 
+                    class="form-control me-2" 
+                    formControlName="celular" 
+                    type="text" 
+                    placeholder="-------" 
+                    aria-label="Search" 
+                    required>
+                  <button class="btn btn-lottery" type="submit">Buscar boleto</button>
+                </form>
+                <div class="mostrar_data">
+                  <!-- Solo mostrar la lista si ya se ha realizado la consulta y hay items válidos -->
+                  <ul *ngIf="modalItems && modalItems.length > 0">
+                    <li *ngFor="let item of modalItems">
+                      <!-- Solo mostrar datos válidos -->
+                      <ng-container *ngIf="item.nombre || item.celular || (item.elegirnumero && item.elegirnumero.length > 0)">
+                        <strong *ngIf="item.nombre">Nombre:</strong> {{ item.nombre }}<br>
+                        <strong *ngIf="item.celular">Celular:</strong> {{ item.celular }}<br>
+                        <!-- Mostrar "Números Elegidos" solo si existen números -->
+                        <strong *ngIf="item.elegirnumero && item.elegirnumero.length > 0">Números Elegidos:</strong>
+                        <ul *ngIf="item.elegirnumero && item.elegirnumero.length > 0">
+                          <li *ngFor="let numero of item.elegirnumero">{{ numero }}</li>
+                        </ul>
+                      </ng-container>
+                    </li> 
+                  </ul>
+                  <!-- Mostrar mensaje si no hay datos disponibles (solo después de hacer la consulta) -->
+                  <p *ngIf="modalItems && modalItems.length === 0">No se encontraron datos.</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -116,7 +160,7 @@
  
 
 <div class="container text-center">
-  <form class="contact-form" [formGroup]="userForm" (ngSubmit)="onSubmit()" novalidate>
+  <form class="contact-form" [formGroup]="userForm" (ngSubmit)="confirmarBoleto(); $event.preventDefault()" novalidate>
     <div class="col-12 pt-4 pb-3">
       <h3 class="title-loterry color-lottery">
         <i class="fa fa-user-circle" aria-hidden="true"></i> 
@@ -234,7 +278,8 @@
             class="btn btn-lottery" 
             data-bs-toggle="modal"
             [disabled]="isButtonDisabled" 
-            data-bs-target="#exampleModal">
+            data-bs-target="#exampleModal"
+            (click)="$event.stopPropagation()">
               Confirmar
           </button> 
         </div>

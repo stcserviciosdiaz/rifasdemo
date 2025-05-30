@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs, addDoc, doc } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, addDoc, doc, query, where } from 'firebase/firestore';
 import { environment } from 'src/environments/environment';
 
 
@@ -10,13 +10,16 @@ import { environment } from 'src/environments/environment';
 export class FirebaseService {
   private firestore: any;
 
+  public items: any[] = [];  // Para almacenar los datos de Firestore
+ 
+
   constructor() {
     const app = initializeApp(environment.firebase);
     this.firestore = getFirestore(app);
     
   }
 
-  // Método para agregar datos
+  // Método para guardar datos
   async addData(collectionName: string, data: any) {
     try {
       const docRef = await addDoc(collection(this.firestore, collectionName), data);
@@ -26,44 +29,8 @@ export class FirebaseService {
     }
   }
 
-  // Método para obtener todos los documentos de una colección
-  async getAllData(collectionName: string) {
-    try {
-      const querySnapshot = await getDocs(collection(this.firestore, collectionName));
-      return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    } catch (e) {
-      console.error("Error getting documents: ", e);
-      return [];
-    }
-  }
 
-  async getData(collectionName: string): Promise<any[]> {
-    const querySnapshot = await getDocs(collection(this.firestore, collectionName));
-    return querySnapshot.docs.map(doc => doc.data());
-  }
-
-  // Método para obtener datos de una colección
-  async getCollectionData(collectionName: string): Promise<any[]> {
-    const colRef = collection(this.firestore, collectionName);
-    const snapshot = await getDocs(colRef);
-    const dataList = snapshot.docs.map(doc => doc.data());
-
-    console.log(dataList); // Imprimir los datos en la consola
-
-    return dataList;
-  }
-
-  async getIdsFromCollection(collectionName: string): Promise<string[]> {
-    const colRef = collection(this.firestore, collectionName);
-    const snapshot = await getDocs(colRef);
-
-    const ids = snapshot.docs.map(doc => doc.id.toString()); // Obtén solo los IDs de los documentos
-
-    console.log('IDs obtenidos de Firestore:', ids); // Imprime en la consola
-
-    return ids;
-  }
-
+  // Método para desabilitar el numero despues de guardar
   async getDisabledNumbersFromCollection(collectionName: string): Promise<string[]> {
     const colRef = collection(this.firestore, collectionName);
     const snapshot = await getDocs(colRef);
@@ -74,5 +41,35 @@ export class FirebaseService {
 
     return disabledNumbers.map((num: any) => num.toString()); // Convierte a strings
   }
+
+
+
+  async getCollectionDataByCell(collectionName: string, celular: string): Promise<any[]> {
+    try {
+      const colRef = collection(this.firestore, collectionName);
+      const q = query(colRef, where('form.celular', '==', celular)); // Consulta usando 'form.celular'
+      const snapshot = await getDocs(q);
+      
+      const dataList = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id, // ID del documento
+          celular: data['form']?.['celular'] || null, // Accede con notación de índice
+          codigoArea: data['form']?.['codigoArea'] || null, // Accede con notación de índice
+          nombre: data['form']?.['nombre'] || null, // Accede con notación de índice
+          elegirnumero: data['elegirnumero'] || [] // Asume que elegirnumero es un array
+        };
+      });
+  
+      console.log("Datos filtrados por celular:", dataList); // Imprimir los datos filtrados
+      return dataList;
+    } catch (error) {
+      console.error("Error al obtener los datos por celular:", error);
+      return [];
+    }
+  }
+  
+
+
 
 }

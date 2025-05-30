@@ -76,6 +76,8 @@ export class Rifa001Component implements OnInit {
     {id: 141,price: 2,},{id: 142,price: 2,},{id: 143,price: 2,},{id: 144,price: 2,},
   ];
 
+  modalItems: any[] = []; // Para los datos del modal
+
   codigosDeArea: string[] = ['+1', '+44', '+33', '+34', '+55', '+91', '+81', '+61', '+49', '+51', '+52', '+53', '+56', '+57', '+58', '+593', '+591', '+595', '+598', '+502', '+503', '+504'];
 
   bancoelegido: any;
@@ -97,6 +99,9 @@ export class Rifa001Component implements OnInit {
   isUser = false;
 
   bancoelegidoId: number | null = null;
+
+  form: FormGroup;
+  //celular: string = ''; // Variable para almacenar el número de celular ingresado
 
   listadebancos = [
     { id: 1,
@@ -131,7 +136,8 @@ export class Rifa001Component implements OnInit {
 
   progressPercentage: number = 0;
   
-    
+
+  //public celular: string = ''; // Variable para el número de celular ingresado
   
   constructor(
     
@@ -142,7 +148,12 @@ export class Rifa001Component implements OnInit {
 
    
     
-  ) {}
+  ) {
+
+    this.form = this.fb.group({
+      celular: ['']
+    });
+  }
 
   
 
@@ -160,6 +171,7 @@ export class Rifa001Component implements OnInit {
 
 
   async ngOnInit() {
+    this.getRaffleData(); // Llamar a la función para obtener los datos al iniciar el componente
     //this.startCountdown();
 
     // Inicializa el estado del botón y del mensaje al cargar la vista
@@ -220,7 +232,7 @@ export class Rifa001Component implements OnInit {
     this.showNumberMessage = this.numeroelegido.length > 0 && this.numeroelegido.length < 2;
   }
 
-  onSubmit(){
+  confirmarBoleto(){
     if (this.numeroelegido.length >= 2) {
       const formData = this.userForm.value;
       const selectedData = {
@@ -239,6 +251,43 @@ export class Rifa001Component implements OnInit {
     }
     
   }
+
+
+  
+
+  
+
+  getRaffleData(): void { 
+    const celular = String(this.form.get('celular')?.value || "").trim();
+    if (celular) {
+      this.modalItems = [];  // Limpiar antes de la consulta
+      
+      this.firebaseService.getCollectionDataByCell('lottery01', celular)
+        .then(data => {
+          if (data.length > 0) {
+            this.modalItems = data.map(item => ({
+              celular: item.celular || 'No disponible',
+              nombre: item.nombre || 'No disponible',
+              elegirnumero: Array.isArray(item.elegirnumero) && item.elegirnumero.length > 0 ? item.elegirnumero : []
+            }));
+          } else {
+            alertify.error('No se encontraron datos.');
+            this.modalItems = [];
+          }
+          this.cdr.detectChanges();
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          this.modalItems = [];
+        });
+    } else {
+      //alertify.error('Por favor ingresa un número.');
+      this.modalItems = [];
+    }
+  }
+  
+ 
+  
 
   // Función que se llama cuando se selecciona o deselecciona un número
   elegirnumero(numero: number, price: number): void {

@@ -52,10 +52,57 @@
             <p> 🔹 Se llenan los datos.</p>
             <p> 🔹 Se realiza el registro. </p>
           </div>
-          <button class="navbar-toggler btn-search btn-lottery mt-4" type="button">
+
+
+
+          <!-- Button trigger modal -->
+          <button class="navbar-toggler btn-search btn-lottery mt-4" type="button" 
+           data-bs-toggle="modal" data-bs-target="#searchtickets">
             <i class="fa fa-search" aria-hidden="true"></i>
             Verificador de Boletos
           </button>
+          <!-- Modal -->
+          <div class="modal fade" id="searchtickets" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content px-3">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Buscar compras</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- Formulario para Buscar Boleto -->
+                <p>Ingrese su número de Celular</p>  
+                <form [formGroup]="form" (ngSubmit)="getRaffleData(); $event.preventDefault();" class="d-flex">
+                  <input 
+                    class="form-control me-2" 
+                    formControlName="celular" 
+                    type="text" 
+                    placeholder="-------" 
+                    aria-label="Search" 
+                    required>
+                  <button class="btn btn-lottery" type="submit">Buscar boleto</button>
+                </form>
+                <div class="mostrar_data">
+                  <!-- Solo mostrar la lista si ya se ha realizado la consulta y hay items válidos -->
+                  <ul *ngIf="modalItems && modalItems.length > 0">
+                    <li *ngFor="let item of modalItems">
+                      <!-- Solo mostrar datos válidos -->
+                      <ng-container *ngIf="item.nombre || item.celular || (item.elegirnumero && item.elegirnumero.length > 0)">
+                        <strong *ngIf="item.nombre">Nombre:</strong> {{ item.nombre }}<br>
+                        <strong *ngIf="item.celular">Celular:</strong> {{ item.celular }}<br>
+                        <!-- Mostrar "Números Elegidos" solo si existen números -->
+                        <strong *ngIf="item.elegirnumero && item.elegirnumero.length > 0">Números Elegidos:</strong>
+                        <ul *ngIf="item.elegirnumero && item.elegirnumero.length > 0">
+                          <li *ngFor="let numero of item.elegirnumero">{{ numero }}</li>
+                        </ul>
+                      </ng-container>
+                    </li> 
+                  </ul>
+                  <!-- Mostrar mensaje si no hay datos disponibles (solo después de hacer la consulta) -->
+                  <p *ngIf="modalItems && modalItems.length === 0">No se encontraron datos.</p>
+                </div>                
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -67,56 +114,47 @@
   <div class="text-center">
     <h3 class="title-loterry color-lottery">
       <i class="fa fa-list-ol" aria-hidden="true"></i> 
-      LISTA DE BOLETOS
+      Compra aquí tus boletos
     </h3>
-    <p><i class="fa fa-info-circle"></i> Min. 2 tickets por compra</p>
+    <div class="">
+      <p><i class="fa fa-info-circle"></i> Min. 2 tickets por compra</p>
+      <span class="badge bg-dark">
+        <i class="fa fa-ticket fa-lg" style="color: gold;"></i>  Precio por 1 ticket: 
+        <span class="">1 $USD
+        </span>
+      </span>
+    </div>
+    
     <p class="lead pb-4">¡Experimenta la Fiebre de Premios en Nuestra Gran Rifa de Apertura! Gana Motos, Teléfonos y Premios en Efectivo!.</p>
   </div>
   <div class="container">
-    <table class="table" >
-      <tbody>
-        <tr>
-          <th class="col-md-1 col-2 d-blog text-center cursor-pointer" 
-              *ngFor="let item of items"
-              [ngClass]="{'disabled': isDisabled(item.id)}"
-              (click)="elegirnumero(item.id, item.price)"
-              [class.selected]="numeroelegido.includes(item.id)">
-              <input
-                  [disabled]="isDisabled(item.id)"
-                  class="d-none"
-                  [checked]="numeroelegido.includes(item.id)"
-                  type="checkbox">
-                  
-              {{item.id}}
-          </th>
-        </tr>
-      </tbody>
-    </table>
-    <div class="text-center">
-      <h3 class="title-loterry">
-        <i class="fa fa-check-circle" aria-hidden="true"></i> 
-        Seleccionados
-      </h3>
-      <div>
-        <p *ngIf="numeroelegido.length === 0">No hay Números seleccionados.</p>
-        <div class="columna-lottery">
-          <div class="w-20" *ngFor="let n of numeroelegido">
-            <p class="items-numeros">{{ n }} </p>
-          </div>
-        </div>
-      </div>
-      <div class="title-loterry">
-        <p class="title-price">Total: $  {{ getTotalPrice() }}</p>
-        <em>Precio de Boleto</em><s> $2</s>
+    
+    <div class="d-grid col-4 gap-3 mx-auto">
+      <div class="">
+        <button 
+          *ngFor="let opcion of [2, 5, 10, 20, 30, 50]"
+          class="btn btn-outline-warning btn-boleto"
+          [class.active]="cantidadSeleccionada === opcion"
+          (click)="elegirCantidadYSeleccionar(opcion)">
+          +{{opcion}}
+        </button>
       </div>
     </div>
+
+    <div class="d-flex items-center justify-content-center my-4 gap-2">
+      <button class="btn-cantidad" (click)="restarCantidad()">−</button>
+      <input class="text-center w-16 font-bold" [value]="cantidadSeleccionada" readonly>
+      <button class="btn-cantidad" (click)="sumarCantidad()">+</button>
+    </div>
+
   </div>
+
 </div>
 
  
 
 <div class="container text-center">
-  <form class="contact-form" [formGroup]="userForm" (ngSubmit)="onSubmit()" novalidate>
+  <form class="contact-form" [formGroup]="userForm" (ngSubmit)="confirmarBoleto(); $event.preventDefault()" novalidate>
     <div class="col-12 pt-4 pb-3">
       <h3 class="title-loterry color-lottery">
         <i class="fa fa-user-circle" aria-hidden="true"></i> 
@@ -259,11 +297,11 @@
           src="../../../assets/images/{{ rifaoff.imagen }}" alt="">
       </div>
       <div class="text-align-left col-6">
-        <p class="title-loterry">Rifa Nª.:<em style="font-weight: 200;">#0001</em></p>
+        <p class="title-loterry">Rifa Nª.:<em style="font-weight: 200;">#0002</em></p>
         <p class="title-loterry">Fecha de Sorteo.:</p>
         <p class="title-loterry">Nombres.: <em style="font-weight: 200;">{{ userForm.get('nombre')?.value }}</em></p>
         <p class="title-loterry">Celular.: <em style="font-weight: 200;">{{ userForm.get('celular')?.value }}</em></p>
-        <p class="title-loterry">Números reservados.: <em style="font-weight: 200;">{{ numeroelegido }}</em></p>
+        <p class="title-loterry">Números reservados.: <em style="word-wrap: break-word; font-weight: 200;">{{ numeroelegido }}</em></p>
         <p class="title-loterry">Precio por número.: <em style="font-weight: 200;">$2</em></p>
         <p class="title-loterry">Precio Total.:<em style="font-weight: 200;">{{ getTotalPrice() }}</em></p>
       </div>

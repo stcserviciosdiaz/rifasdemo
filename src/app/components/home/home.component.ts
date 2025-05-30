@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { NavComponent } from '../nav/nav.component';
 import { FooterComponent } from "../footer/footer.component";
 import { FirebaseService } from 'src/app/services/firestore.service';
+import { DialogContentExampleDialog } from '../dialog/dialog.component';
 
 @Component({
   selector: 'app-home',
@@ -20,6 +21,7 @@ import { FirebaseService } from 'src/app/services/firestore.service';
     RouterModule,
     CommonModule,
     NavComponent,
+    DialogContentExampleDialog,
     FooterComponent
 ]
 })

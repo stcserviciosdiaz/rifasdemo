@@ -10,6 +10,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatChipsModule} from '@angular/material/chips';
 import { MatDialog, MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
+import { NumerosService  } from '../../../services/numeros.service'
 
 import * as alertify from 'alertifyjs';
 
@@ -26,7 +27,7 @@ import { FooterComponent } from '../../footer/footer.component';
 import { FirebaseService } from 'src/app/services/firestore.service';
 
 @Component({
-  selector: 'app-home',
+  selector: 'app-rifa002',
   templateUrl: './rifa002.component.html',
   styleUrls: ['./rifa002.component.css'],
   standalone: true,
@@ -55,26 +56,31 @@ import { FirebaseService } from 'src/app/services/firestore.service';
 
 
 export class Rifa002Component implements OnInit {
-  
-  public items: any = [
-    { id: 1, price: 2, disabled: false},
-    { id: 2, price: 2, disabled: false},
-    {id: 3,price: 2,},{id: 4,price: 2,},{id: 5,price: 2,},{id: 6,price: 2,},{id: 7,price: 2,},{id: 8,price: 2,},{id: 9,price: 2,},{id: 10,price: 2,},
-    {id: 11,price: 2,},{id: 12,price: 2,},{id: 13,price: 2,},{id: 14,price: 2,},{id: 15,price: 2,},{id: 16,price: 2,},{id: 17,price: 2,},{id: 18,price: 2,},{id: 19,price: 2,},{id: 20,price: 2,},
-    {id: 21,price: 2,},{id: 22,price: 2,},{id: 23,price: 2,},{id: 24,price: 2,},{id: 25,price: 2,},{id: 26,price: 2,},{id: 27,price: 2,},{id: 28,price: 2,},{id: 29,price: 2,},{id: 30,price: 2,},
-    {id: 31,price: 2,},{id: 32,price: 2,},{id: 33,price: 2,},{id: 34,price: 2,},{id: 35,price: 2,},{id: 36,price: 2,},{id: 37,price: 2,},{id: 38,price: 2,},{id: 39,price: 2,},{id: 40,price: 2,},
-    {id: 41,price: 2,},{id: 42,price: 2,},{id: 43,price: 2,},{id: 44,price: 2,},{id: 45,price: 2,},{id: 46,price: 2,},{id: 47,price: 2,},{id: 48,price: 2,},{id: 49,price: 2,},{id: 50,price: 2,},
-    {id: 51,price: 2,},{id: 52,price: 2,},{id: 53,price: 2,},{id: 54,price: 2,},{id: 55,price: 2,},{id: 56,price: 2,},{id: 57,price: 2,},{id: 58,price: 2,},{id: 59,price: 2,},{id: 60,price: 2,},
-    {id: 61,price: 2,},{id: 62,price: 2,},{id: 63,price: 2,},{id: 64,price: 2,},{id: 65,price: 2,},{id: 66,price: 2,},{id: 67,price: 2,},{id: 68,price: 2,},{id: 69,price: 2,},{id: 70,price: 2,},
-    {id: 71,price: 2,},{id: 72,price: 2,},{id: 73,price: 2,},{id: 74,price: 2,},{id: 75,price: 2,},{id: 76,price: 2,},{id: 77,price: 2,},{id: 78,price: 2,},{id: 79,price: 2,},{id: 80,price: 2,},
-    {id: 81,price: 2,},{id: 82,price: 2,},{id: 83,price: 2,},{id: 84,price: 2,},{id: 85,price: 2,},{id: 86,price: 2,},{id: 87,price: 2,},{id: 88,price: 2,},{id: 89,price: 2,},{id: 90,price: 2,},
-    {id: 91,price: 2,},{id: 92,price: 2,},{id: 93,price: 2,},{id: 94,price: 2,},{id: 95,price: 2,},{id: 96,price: 2,},{id: 97,price: 2,},{id: 98,price: 2,},{id: 99,price: 2,},{id: 100,price: 2,},
-    {id: 101,price: 2,},{id: 102,price: 2,},{id: 103,price: 2,},{id: 104,price: 2,},{id: 105,price: 2,},{id: 106,price: 2,},{id: 107,price: 2,},{id: 108,price: 2,},{id: 109,price: 2,},{id: 110,price: 2,},
-    {id: 111,price: 2,},{id: 112,price: 2,},{id: 113,price: 2,},{id: 114,price: 2,},{id: 115,price: 2,},{id: 116,price: 2,},{id: 117,price: 2,},{id: 118,price: 2,},{id: 119,price: 2,},{id: 120,price: 2,},
-    {id: 121,price: 2,},{id: 122,price: 2,},{id: 123,price: 2,},{id: 124,price: 2,},{id: 125,price: 2,},{id: 126,price: 2,},{id: 127,price: 2,},{id: 128,price: 2,},{id: 129,price: 2,},{id: 130,price: 2,},
-    {id: 131,price: 2,},{id: 132,price: 2,},{id: 133,price: 2,},{id: 134,price: 2,},{id: 135,price: 2,},{id: 136,price: 2,},{id: 137,price: 2,},{id: 138,price: 2,},{id: 139,price: 2,},{id: 140,price: 2,},
-    {id: 141,price: 2,},{id: 142,price: 2,},{id: 143,price: 2,},{id: 144,price: 2,},
-  ];
+
+  opciones = [2, 5, 10, 20, 30, 50];
+  cantidadSeleccionada = 2;
+
+  public currentPage: number = 1;
+  public itemsPerPage: number = 1000;
+
+  // Obtener los elementos de la página actual
+  get paginatedItems() {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.items.slice(start, end);
+  }
+
+  // Cambiar página
+  changePage(page: number) {
+    this.currentPage = page;
+  }
+
+  // Obtener el número total de páginas
+  get totalPages(): number {
+    return Math.ceil(this.items.length / this.itemsPerPage);
+  }
+
+  modalItems: any[] = []; // Para los datos del modal
 
   codigosDeArea: string[] = ['+1', '+44', '+33', '+34', '+55', '+91', '+81', '+61', '+49', '+51', '+52', '+53', '+56', '+57', '+58', '+593', '+591', '+595', '+598', '+502', '+503', '+504'];
 
@@ -97,6 +103,9 @@ export class Rifa002Component implements OnInit {
   isUser = false;
 
   bancoelegidoId: number | null = null;
+
+  form: FormGroup;
+  //celular: string = ''; // Variable para almacenar el número de celular ingresado
 
   listadebancos = [
     { id: 1,
@@ -131,7 +140,8 @@ export class Rifa002Component implements OnInit {
 
   progressPercentage: number = 0;
   
-    
+  public items: any[] = [];
+  //public celular: string = ''; // Variable para el número de celular ingresado
   
   constructor(
     
@@ -142,7 +152,12 @@ export class Rifa002Component implements OnInit {
 
    
     
-  ) {}
+  ) {
+
+    this.form = this.fb.group({
+      celular: ['']
+    });
+  }
 
   
 
@@ -159,40 +174,92 @@ export class Rifa002Component implements OnInit {
   }
 
 
-  async ngOnInit() {
-    //this.startCountdown();
+  
 
-    // Inicializa el estado del botón y del mensaje al cargar la vista
+  elegirCantidadYSeleccionar(cantidad: number) {
+    this.cantidadSeleccionada = cantidad;
+    this.seleccionarNumerosAleatorios(cantidad);
+  }
+
+
+  seleccionarNumerosAleatorios(cantidad: number) {
+    const disponibles = this.items.filter(item => !item.disabled && !this.numeroelegido.includes(item.id));
+    
+    if (disponibles.length < cantidad) {
+      alert('No hay suficientes números disponibles.');
+      return;
+    }
+
+    const seleccionados: string[] = [];
+    while (seleccionados.length < cantidad) {
+      const aleatorio = disponibles[Math.floor(Math.random() * disponibles.length)];
+      if (!seleccionados.includes(aleatorio.id)) {
+        seleccionados.push(aleatorio.id);
+      }
+    }
+
+    this.numeroelegido = seleccionados;
+    this.cdr.detectChanges();
+  }
+
+
+  generateNumbers(total: number): any[] {
+    const generatedItems = [];
+
+    for (let i = 1; i <= total; i++) {
+      const id = i.toString().padStart(5, '0'); // ejemplo: 00001, 00002
+      generatedItems.push({
+        id,
+        price: 2,
+        disabled: false
+      });
+    }
+
+    return generatedItems;
+  }
+
+  async ngOnInit() {
+    this.getRaffleData();
     this.updateButtonState();
 
-    // Suscribirse a los cambios en el formulario para actualizar el botón en tiempo real
     this.userForm.valueChanges.subscribe(() => {
       this.updateButtonState();
     });
 
-    this.firebaseService.getDisabledNumbersFromCollection('lottery02')
-      .then(numbers => {
-        this.disabledIds = numbers;
-        //console.log('Números deshabilitados:', this.disabledIds);
+    try {
+      this.disabledIds = await this.firebaseService.getDisabledNumbersFromCollection('lottery02');
+      
+      // Generar todos los números (por ejemplo, 1 a 100)
+      const totalNumeros = 3000;
+      const todosLosNumeros = this.generateNumbers(totalNumeros);
 
-        // Calcular el porcentaje de progreso
-        this.updateProgress();
+      // Deshabilitar los que están en Firestore
+      this.items = todosLosNumeros.map((item: any) => ({
+        ...item,
+        disabled: this.disabledIds.includes(item.id)
+      }));
 
-        // Modifica cada item para añadir la propiedad `disabled`
-        this.items = this.items.map((item: any) => {
-          return {
-            ...item,
-            disabled: this.disabledIds.includes(item.id.toString()) // Convierte `item.id` a string si es necesario
-          };
-        });
-        // Forzar la detección de cambios después de actualizar los items
-        this.cdr.detectChanges();
-        //console.log('Items después de modificar:', this.items)
-      })
-      .catch(error => {
-        console.error('Error al obtener los números de Firestore:', error);
-      });
+      this.updateProgress();
+      this.cdr.detectChanges();
+      
+    } catch (error) {
+      console.error('Error al obtener los números de Firestore:', error);
+    }
   }
+
+
+  seleccionarCantidad(cantidad: number) {
+    this.cantidadSeleccionada = cantidad;
+  }
+
+  sumarCantidad() {
+    if (this.cantidadSeleccionada < 50) this.cantidadSeleccionada++;
+  }
+
+  restarCantidad() {
+    if (this.cantidadSeleccionada > 1) this.cantidadSeleccionada--;
+  }
+
 
   isDisabled(id: number) {
     const disabled = this.disabledIds.includes(id.toString());
@@ -220,25 +287,64 @@ export class Rifa002Component implements OnInit {
     this.showNumberMessage = this.numeroelegido.length > 0 && this.numeroelegido.length < 2;
   }
 
-  onSubmit(){
-    if (this.numeroelegido.length >= 2) {
-      const formData = this.userForm.value;
-      const selectedData = {
-        form: formData,
-        elegirnumero: this.numeroelegido
-      };
-      this.firebaseService.addData('lottery02', selectedData )
-      this.submitMessage = alertify.success('Gracias por participar, Muchas suerte... ');
-      
-      this.isUser = true;
-      setTimeout(()=>{
-        this.isSubmit=false;
-      },800);
-    }else{
-      this.showAlertModal();  // Mostrar alerta si intentan enviar sin suficientes números
-    }
+
+  confirmarBoleto() {
+  if (this.numeroelegido.length >= 2) {
+    const formData = this.userForm.value;
+    const selectedData = {
+      form: formData,
+      elegirnumero: this.numeroelegido
+    };
+
+    this.firebaseService.addData('lottery02', selectedData);
+    alertify.success('Gracias por participar, ¡Mucha suerte!');
     
+    this.isUser = true;
+    setTimeout(() => {
+      this.isSubmit = false;
+    }, 800);
+
+  } else {
+    this.showAlertModal();
   }
+}
+
+
+  
+
+  
+
+  getRaffleData(): void { 
+    const celular = String(this.form.get('celular')?.value || "").trim();
+    if (celular) {
+      this.modalItems = [];  // Limpiar antes de la consulta
+      
+      this.firebaseService.getCollectionDataByCell('lottery02', celular)
+        .then(data => {
+          if (data.length > 0) {
+            this.modalItems = data.map(item => ({
+              celular: item.celular || 'No disponible',
+              nombre: item.nombre || 'No disponible',
+              elegirnumero: Array.isArray(item.elegirnumero) && item.elegirnumero.length > 0 ? item.elegirnumero : []
+            }));
+          } else {
+            alertify.error('No se encontraron datos.');
+            this.modalItems = [];
+          }
+          this.cdr.detectChanges();
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          this.modalItems = [];
+        });
+    } else {
+      //alertify.error('Por favor ingresa un número.');
+      this.modalItems = [];
+    }
+  }
+  
+ 
+  
 
   // Función que se llama cuando se selecciona o deselecciona un número
   elegirnumero(numero: number, price: number): void {
@@ -276,11 +382,10 @@ export class Rifa002Component implements OnInit {
   }
 
   getTotalPrice(): number {
-    let total = 0;
-    this.precioelegido.forEach(item => {
-      total += item;
-    });
-    return this.numeroelegido.reduce((total, num) => total + this.prices[num], 0);
+  return this.numeroelegido.reduce((total, id) => {
+    const item = this.items.find(i => i.id === id);
+    return item ? total + item.price : total;
+    }, 0);
   }
 
 
