@@ -23,7 +23,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatStepperModule} from '@angular/material/stepper';
 import { DialogContentExampleDialog } from '../../dialog/dialog.component';
 import { FooterComponent } from '../../footer/footer.component';
-import { FirebaseService } from 'src/app/services/firestore.service';
+import { FirebaseService } from 'src/app/services/firebase.service';
 
 @Component({
   selector: 'app-rifa001',
@@ -126,16 +126,18 @@ export class Rifa001Component implements OnInit {
 
   imagendelarifa = [
     { id:'1', 
-      imagen:'bannerdemoc-12.jpg',
+      imagen:'lottery01.jpg',
     },
   ];
   
-  public disabledIds: any [] = []; // Aquí guardamos los IDs deshabilitados
+  
+   public disabledIds: any [] = []; // Aquí guardamos los IDs deshabilitados
 
   prices: { [key: number]: number } = {}; // Diccionario para almacenar los precios asociados a cada número
 
   progressPercentage: number = 0;
-  
+
+  campoBusqueda: 'celular' | 'cedula' = 'celular'; // valor por defecto 
 
   //public celular: string = ''; // Variable para el número de celular ingresado
   
@@ -153,6 +155,13 @@ export class Rifa001Component implements OnInit {
     this.form = this.fb.group({
       celular: ['']
     });
+
+    this.form = this.fb.group({
+      campoBusqueda: ['celular', Validators.required], // Por defecto celular
+      valorBusqueda: ['', Validators.required]
+    });
+
+    
   }
 
   
@@ -257,34 +266,42 @@ export class Rifa001Component implements OnInit {
 
   
 
-  getRaffleData(): void { 
-    const celular = String(this.form.get('celular')?.value || "").trim();
-    if (celular) {
-      this.modalItems = [];  // Limpiar antes de la consulta
-      
-      this.firebaseService.getCollectionDataByCell('lottery01', celular)
-        .then(data => {
-          if (data.length > 0) {
-            this.modalItems = data.map(item => ({
-              celular: item.celular || 'No disponible',
-              nombre: item.nombre || 'No disponible',
-              elegirnumero: Array.isArray(item.elegirnumero) && item.elegirnumero.length > 0 ? item.elegirnumero : []
-            }));
-          } else {
-            alertify.error('No se encontraron datos.');
-            this.modalItems = [];
-          }
-          this.cdr.detectChanges();
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          this.modalItems = [];
-        });
-    } else {
-      //alertify.error('Por favor ingresa un número.');
-      this.modalItems = [];
-    }
+  getRaffleData(): void {
+  let campo = this.form.get('campoBusqueda')?.value?.trim().toLowerCase();
+  const valor = this.form.get('valorBusqueda')?.value?.trim();
+
+  if (campo === 'cédula') campo = 'cedula'; // normalizar
+
+  if (!valor || (campo !== 'celular' && campo !== 'cedula')) {
+    this.modalItems = [];
+    return;
   }
+
+  this.modalItems = [];
+
+  this.firebaseService.getCollectionDataByField('lottery01', campo as 'celular' | 'cedula', valor)
+    .then(data => {
+      if (data.length > 0) {
+        this.modalItems = data.map(item => ({
+          celular: item.celular || 'No disponible',
+          nombre: item.nombre || 'No disponible',
+          cedula: item.cedula || 'No disponible',
+          correo: item.correo || 'No disponible',
+          elegirnumero: Array.isArray(item.elegirnumero)
+            ? item.elegirnumero.map((num: number | string) => String(num).padStart(4, '0'))
+            : []
+        }));
+      } else {
+        alertify.error('No se encontraron datos.');
+        this.modalItems = [];
+      }
+      this.cdr.detectChanges();
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      this.modalItems = [];
+    });
+}
   
  
   

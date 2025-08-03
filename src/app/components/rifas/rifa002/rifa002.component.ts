@@ -24,7 +24,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatStepperModule} from '@angular/material/stepper';
 import { DialogContentExampleDialog } from '../../dialog/dialog.component';
 import { FooterComponent } from '../../footer/footer.component';
-import { FirebaseService } from 'src/app/services/firestore.service';
+import { FirebaseService } from 'src/app/services/firebase.service';
 
 @Component({
   selector: 'app-rifa002',
@@ -102,6 +102,8 @@ export class Rifa002Component implements OnInit {
 
   isUser = false;
 
+  totalPagar: number = 0;
+
   bancoelegidoId: number | null = null;
 
   form: FormGroup;
@@ -130,7 +132,7 @@ export class Rifa002Component implements OnInit {
 
   imagendelarifa = [
     { id:'1', 
-      imagen:'bannerdemoc-12.jpg',
+      imagen:'lottery02.jpg',
     },
   ];
   
@@ -139,6 +141,8 @@ export class Rifa002Component implements OnInit {
   prices: { [key: number]: number } = {}; // Diccionario para almacenar los precios asociados a cada número
 
   progressPercentage: number = 0;
+
+  campoBusqueda: 'celular' | 'cedula' = 'celular'; // valor por defecto
   
   public items: any[] = [];
   //public celular: string = ''; // Variable para el número de celular ingresado
@@ -157,6 +161,13 @@ export class Rifa002Component implements OnInit {
     this.form = this.fb.group({
       celular: ['']
     });
+
+    this.form = this.fb.group({
+      campoBusqueda: ['celular', Validators.required], // Por defecto celular
+      valorBusqueda: ['', Validators.required]
+    });
+
+
   }
 
   
@@ -169,9 +180,77 @@ export class Rifa002Component implements OnInit {
     return this.userForm.get('celular') as FormControl;
   }
 
+  get cedula(){
+    return this.userForm.get('cedula') as FormControl;
+  }
+
+  get correo(){
+    return this.userForm.get('correo') as FormControl;
+  }
+
   get codigoArea() {
     return this.userForm.get('codigoArea');
   }
+
+   async ngOnInit() {
+    this.getRaffleData();
+    this.updateButtonState();
+
+    this.userForm.valueChanges.subscribe(() => {
+      this.updateButtonState();
+    });
+
+    this.cantidadSeleccionada = 2;
+
+    try {
+      this.disabledIds = await this.firebaseService.getDisabledNumbersFromCollection('lottery02');
+      
+      // Generar todos los números (por ejemplo, 1 a 100)
+      const totalNumeros = 100;
+      const todosLosNumeros = this.generateNumbers(totalNumeros);
+
+      // Selecciona automáticamente los primeros n disponibles
+      setTimeout(() => {
+        this.seleccionarNumerosAleatorios(this.cantidadSeleccionada);
+      });
+
+      // Deshabilitar los que están en Firestore
+      this.items = todosLosNumeros.map((item: any) => ({
+        ...item,
+        disabled: this.disabledIds.includes(item.id)
+      }));
+
+       // 👇 genera y asigna números automáticamente al cargar
+      this.numeroelegido = this.generarNumerosAleatorios(this.cantidadSeleccionada);
+      this.updateProgress();
+      this.updateButtonState();
+      this.cdr.detectChanges();
+      
+    } catch (error) {
+      console.error('Error al obtener los números de Firestore:', error);
+    }
+    
+  }
+
+
+
+  generarNumerosAleatorios(cantidad: number): string[] {
+    const numeros: string[] = [];
+    const usados = new Set<number>();
+
+    while (numeros.length < cantidad) {
+      const random = Math.floor(Math.random() * 10000);
+      if (!usados.has(random)) {
+        usados.add(random);
+        numeros.push(random.toString().padStart(5, '0'));
+      }
+    }
+
+    return numeros;
+  }
+
+
+
 
 
   
@@ -198,8 +277,18 @@ export class Rifa002Component implements OnInit {
       }
     }
 
-    this.numeroelegido = seleccionados;
+    this.numeroelegido = [...seleccionados];
+
+    this.actualizarTotalPagar();
+
     this.cdr.detectChanges();
+  }
+
+  actualizarTotalPagar() {
+    this.totalPagar = this.numeroelegido.reduce((total, id) => {
+      const item = this.items.find(i => i.id === id);
+      return item ? total + item.price : total;
+    }, 0);
   }
 
 
@@ -210,7 +299,7 @@ export class Rifa002Component implements OnInit {
       const id = i.toString().padStart(5, '0'); // ejemplo: 00001, 00002
       generatedItems.push({
         id,
-        price: 2,
+        price: 20,
         disabled: false
       });
     }
@@ -218,34 +307,7 @@ export class Rifa002Component implements OnInit {
     return generatedItems;
   }
 
-  async ngOnInit() {
-    this.getRaffleData();
-    this.updateButtonState();
-
-    this.userForm.valueChanges.subscribe(() => {
-      this.updateButtonState();
-    });
-
-    try {
-      this.disabledIds = await this.firebaseService.getDisabledNumbersFromCollection('lottery02');
-      
-      // Generar todos los números (por ejemplo, 1 a 100)
-      const totalNumeros = 3000;
-      const todosLosNumeros = this.generateNumbers(totalNumeros);
-
-      // Deshabilitar los que están en Firestore
-      this.items = todosLosNumeros.map((item: any) => ({
-        ...item,
-        disabled: this.disabledIds.includes(item.id)
-      }));
-
-      this.updateProgress();
-      this.cdr.detectChanges();
-      
-    } catch (error) {
-      console.error('Error al obtener los números de Firestore:', error);
-    }
-  }
+ 
 
 
   seleccionarCantidad(cantidad: number) {
@@ -253,11 +315,17 @@ export class Rifa002Component implements OnInit {
   }
 
   sumarCantidad() {
-    if (this.cantidadSeleccionada < 50) this.cantidadSeleccionada++;
+    if (this.cantidadSeleccionada < 50) {
+      this.cantidadSeleccionada++;
+      this.seleccionarNumerosAleatorios(this.cantidadSeleccionada);
+    }
   }
 
   restarCantidad() {
-    if (this.cantidadSeleccionada > 1) this.cantidadSeleccionada--;
+    if (this.cantidadSeleccionada > 2) {
+      this.cantidadSeleccionada--;
+      this.seleccionarNumerosAleatorios(this.cantidadSeleccionada);
+    }
   }
 
 
@@ -276,15 +344,43 @@ export class Rifa002Component implements OnInit {
   
 
   userForm = this.fb.group({
-    'codigoArea': ['', Validators.required],
-    'nombre': ['', Validators.required,],
-    'celular': ['', [Validators.required, Validators.pattern('^\\+?[0-9]\\d{1,14}$')]]
+    codigoArea: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(4)]],
+
+    nombre: ['', [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$')  // Solo letras y espacios
+    ]],
+
+    cedula: ['', [
+      Validators.required,
+      Validators.pattern('^[0-9]{6,10}$') // entre 6 y 10 dígitos
+    ]],
+
+    correo: ['', [
+      Validators.required,
+      Validators.email // validación de correo estándar
+    ]],
+
+    celular: ['', [
+      Validators.required,
+      Validators.pattern('^[0-9]{7,15}$') // solo números, 7 a 15 dígitos
+    ]]
+    
   })
 
   // Función para actualizar el estado del botón
   updateButtonState(): void {
     this.isButtonDisabled = !this.userForm.valid || this.numeroelegido.length < 2;
     this.showNumberMessage = this.numeroelegido.length > 0 && this.numeroelegido.length < 2;
+  }
+
+  irHome() {
+    this.router.navigate(['/']);
+  }
+
+  seguirComprando() {
+    this.router.navigate(['/rifa']);
   }
 
 
@@ -299,7 +395,7 @@ export class Rifa002Component implements OnInit {
     this.firebaseService.addData('lottery02', selectedData);
     alertify.success('Gracias por participar, ¡Mucha suerte!');
     
-    this.isUser = true;
+    //this.isUser = true;
     setTimeout(() => {
       this.isSubmit = false;
     }, 800);
@@ -310,38 +406,56 @@ export class Rifa002Component implements OnInit {
 }
 
 
-  
+  printDiv(divId: string) {
+    const printContents = document.getElementById(divId)?.innerHTML;
+    const originalContents = document.body.innerHTML;
 
-  
-
-  getRaffleData(): void { 
-    const celular = String(this.form.get('celular')?.value || "").trim();
-    if (celular) {
-      this.modalItems = [];  // Limpiar antes de la consulta
-      
-      this.firebaseService.getCollectionDataByCell('lottery02', celular)
-        .then(data => {
-          if (data.length > 0) {
-            this.modalItems = data.map(item => ({
-              celular: item.celular || 'No disponible',
-              nombre: item.nombre || 'No disponible',
-              elegirnumero: Array.isArray(item.elegirnumero) && item.elegirnumero.length > 0 ? item.elegirnumero : []
-            }));
-          } else {
-            alertify.error('No se encontraron datos.');
-            this.modalItems = [];
-          }
-          this.cdr.detectChanges();
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          this.modalItems = [];
-        });
-    } else {
-      //alertify.error('Por favor ingresa un número.');
-      this.modalItems = [];
+    if (printContents) {
+      document.body.innerHTML = printContents;
+      window.print();
+      document.body.innerHTML = originalContents;
+      window.location.reload(); // recarga la página para volver al estado original
     }
   }
+
+  
+
+  getRaffleData(): void {
+  let campo = this.form.get('campoBusqueda')?.value?.trim().toLowerCase();
+  const valor = this.form.get('valorBusqueda')?.value?.trim();
+
+  if (campo === 'cédula') campo = 'cedula'; // normalizar
+
+  if (!valor || (campo !== 'celular' && campo !== 'cedula')) {
+    this.modalItems = [];
+    return;
+  }
+
+  this.modalItems = [];
+
+  this.firebaseService.getCollectionDataByField('lottery02', campo as 'celular' | 'cedula', valor)
+    .then(data => {
+      if (data.length > 0) {
+        this.modalItems = data.map(item => ({
+          celular: item.celular || 'No disponible',
+          nombre: item.nombre || 'No disponible',
+          cedula: item.cedula || 'No disponible',
+          correo: item.correo || 'No disponible',
+          elegirnumero: Array.isArray(item.elegirnumero)
+            ? item.elegirnumero.map((num: number | string) => String(num).padStart(5, '0'))
+            : []
+        }));
+      } else {
+        alertify.error('No se encontraron datos.');
+        this.modalItems = [];
+      }
+      this.cdr.detectChanges();
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      this.modalItems = [];
+    });
+}
   
  
   
@@ -361,9 +475,12 @@ export class Rifa002Component implements OnInit {
     // Verifica si el número seleccionado es menor a 2 
     this.showAlertModal();
 
-    // Actualiza el estado del botón dependiendo de la cantidad de números seleccionados
+    this.actualizarTotalPagar();
+
     this.updateButtonState();
   }
+
+
 
   // Función para mostrar la alerta si no hay suficientes números seleccionados
   showAlertModal(): void {
@@ -382,24 +499,39 @@ export class Rifa002Component implements OnInit {
   }
 
   getTotalPrice(): number {
-  return this.numeroelegido.reduce((total, id) => {
-    const item = this.items.find(i => i.id === id);
-    return item ? total + item.price : total;
+    return this.numeroelegido.reduce((total, id) => {
+      const item = this.items.find(i => i.id === id.toString().padStart(5, '0'));
+      return item ? total + item.price : total;
     }, 0);
   }
 
 
-  // Generar enlace para enviar mensaje a WhatsApp
-  generarEnlaceWhatsApp(): string {
+ generarEnlaceWhatsApp(): string {
     const baseUrl = 'https://api.whatsapp.com/send';
-    const numeroSoporte = '+322323232323'; // Cambia esto por el número real de soporte
-    const mensaje = `Hola, quiero confirmar mi compra. Mis boletos elegidos son: ${this.numeroelegido.join(', ')}. 
-    Por favor, realiza el pago en la cuenta ${this.bancoelegido?.banco}, 
-    número ${this.bancoelegido?.numero}, titular ${this.bancoelegido?.titular}.`;
+    const numeroSoporte = '+5804248070175'; // Número de soporte
+    const nombre = this.userForm.get('nombre')?.value || 'Cliente';
+
+    // Formatear los boletos a 4 dígitos
+    const boletos = this.numeroelegido
+      .map((num: number | string) => String(Number(num)).padStart(5, '0'))
+      .join(', ');
+
+    // Calcular el precio total
+    const totalBs = this.getTotalPrice();
+
+    // Construir el mensaje
+    const mensaje = `Hola, soy ${nombre}. Quiero confirmar mi compra.\n
+    Boletos elegidos: ${boletos}\n
+    Total a pagar: $ ${totalBs}\n
+    Banco: ${this.bancoelegido?.banco}\n
+    Cuenta: ${this.bancoelegido?.numero}\n
+    Titular: ${this.bancoelegido?.titular}\n
+    Por favor, confirma que el pago fue recibido. ¡Gracias!`;
 
     const url = `${baseUrl}?phone=${numeroSoporte}&text=${encodeURIComponent(mensaje)}`;
     return url;
   }
+
 
 
 

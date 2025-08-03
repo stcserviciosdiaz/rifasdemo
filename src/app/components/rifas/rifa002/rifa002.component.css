@@ -246,6 +246,11 @@ button.btn-copy {
   padding: 15px 10px 10px 15px;
 }
 
+.error small {
+  color: red;
+  font-size: 12px;
+}
+
 .btn-boleto {
     background-color: #eee;
     border-radius: 8px;

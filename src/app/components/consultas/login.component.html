@@ -1,0 +1,25 @@
+<app-nav></app-nav>
+<div class="container">
+    <main class="form-signin text-center">
+        <h1 class="h3 mb-3 fw-normal pt-4">
+                Por favor, inicia sesión
+            </h1>
+        <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+            
+            <div class="form-floating mb-2">
+                <input type="email" class="form-control" id="floatingInput" formControlName="email" placeholder="nombre@ejemplo.com" required>
+                <label for="floatingInput">Correo</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="floatingPassword" formControlName="password" placeholder="Contraseña" required>
+                <label for="floatingPassword">Contraseña</label>
+            </div>
+            <button class="w-100 btn btn-lg btn-primary btn-lottery" type="submit">Iniciar sesión</button>
+            
+        </form>
+        <p class="mt-5 mb-3 text-muted">
+                © 2017–2021
+            </p>
+    </main>
+</div>
+<app-footer></app-footer>

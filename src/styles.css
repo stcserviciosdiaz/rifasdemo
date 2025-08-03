@@ -26,6 +26,18 @@ body { margin: 0; font-family: 'Poppins', sans-serif; }
   color: #000000 !important;
 }
 
+.section-lottery{
+  background-color: #ffa200;
+  border-color: #ffa200;
+  box-shadow: 0 0 18px #ffa200;
+  font-size: 18px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #fff;
+  padding: 15px 10px 15px 10px;
+}
+
 .btn-lottery {
     background-color: #ffa200;
     border-color: #ffa200;

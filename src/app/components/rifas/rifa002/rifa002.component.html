@@ -1,4 +1,4 @@
-<app-faqs></app-faqs>
+<app-nav></app-nav>
 
 
 
@@ -69,37 +69,69 @@
                   <h5 class="modal-title" id="exampleModalLabel">Buscar compras</h5>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <!-- Formulario para Buscar Boleto -->
-                <p>Ingrese su número de Celular</p>  
-                <form [formGroup]="form" (ngSubmit)="getRaffleData(); $event.preventDefault();" class="d-flex">
-                  <input 
-                    class="form-control me-2" 
-                    formControlName="celular" 
-                    type="text" 
-                    placeholder="-------" 
-                    aria-label="Search" 
-                    required>
-                  <button class="btn btn-lottery" type="submit">Buscar boleto</button>
-                </form>
-                <div class="mostrar_data">
-                  <!-- Solo mostrar la lista si ya se ha realizado la consulta y hay items válidos -->
-                  <ul *ngIf="modalItems && modalItems.length > 0">
-                    <li *ngFor="let item of modalItems">
-                      <!-- Solo mostrar datos válidos -->
-                      <ng-container *ngIf="item.nombre || item.celular || (item.elegirnumero && item.elegirnumero.length > 0)">
-                        <strong *ngIf="item.nombre">Nombre:</strong> {{ item.nombre }}<br>
-                        <strong *ngIf="item.celular">Celular:</strong> {{ item.celular }}<br>
-                        <!-- Mostrar "Números Elegidos" solo si existen números -->
-                        <strong *ngIf="item.elegirnumero && item.elegirnumero.length > 0">Números Elegidos:</strong>
-                        <ul *ngIf="item.elegirnumero && item.elegirnumero.length > 0">
-                          <li *ngFor="let numero of item.elegirnumero">{{ numero }}</li>
+
+                <div class="modal-body">
+                  <!-- Buscador -->
+                   <p>Ingrese su número de celular</p>
+                  <form [formGroup]="form" (ngSubmit)="getRaffleData(); $event.preventDefault();" class="input-group">
+                    <input 
+                      class="form-control" 
+                      type="text" 
+                      formControlName="valorBusqueda"
+                      placeholder="----------"
+                      required>
+                    <button class="btn btn-outline-secondary  btn-lottery" type="submit">
+                      <i class="fa fa-search"></i> Buscar
+                    </button>
+                  </form>
+
+                 <!-- Resultado de la búsqueda -->
+                  <div class="mostrar_data mt-3" *ngIf="modalItems && modalItems.length > 0">
+                    <div class="row" id="ID_DIV">
+                      
+                      <!-- Imagen de la rifa -->
+                      <div class="col-6" *ngFor="let rifaoff of imagendelarifa">
+                        <img
+                          style="width: 100%; height: 300px;" 
+                          class="cursor-pointer bg-img"
+                          [src]="'../../../assets/images/' + rifaoff.imagen" 
+                          alt="Imagen de la rifa">
+                      </div>
+                      
+                      <!-- Datos del boleto -->
+                      <div class="col-6">
+                        <ul style="padding-left: 10px;">
+                          <li *ngFor="let item of modalItems">
+                            <ng-container *ngIf="item.nombre || item.celular || item.elegirnumero?.length">
+                              <strong *ngIf="item.nombre">Nombre:</strong> {{ item.nombre }}<br>
+                              <strong *ngIf="item.celular">Celular:</strong> {{ item.celular }}<br>
+                              <strong *ngIf="item.cedula">Cédula:</strong> {{ item.cedula }}<br>
+                              <strong *ngIf="item.correo">Correo:</strong> {{ item.correo }}<br>
+                              <strong *ngIf="item.elegirnumero?.length">Números Elegidos:</strong>
+                              <ul>
+                                <li *ngFor="let numero of item.elegirnumero">{{ numero }}</li>
+                              </ul>
+                            </ng-container>
+                          </li>
                         </ul>
-                      </ng-container>
-                    </li> 
-                  </ul>
-                  <!-- Mostrar mensaje si no hay datos disponibles (solo después de hacer la consulta) -->
+                      </div>
+
+                      <!-- Botón para imprimir -->
+                      <div class="text-center pt-4">
+                        <button type="button"
+                                class="btn btn-lottery"
+                                (click)="printDiv('ID_DIV')">
+                          <i class="fa fa-print" aria-hidden="true"></i> Imprimir Boleto
+                        </button>
+                      </div>
+                      
+                    </div>
+                  </div>
+
+                  <!-- Si no hay resultados -->
                   <p *ngIf="modalItems && modalItems.length === 0">No se encontraron datos.</p>
-                </div>                
+
+                </div>
               </div>
             </div>
           </div>
@@ -129,7 +161,7 @@
   </div>
   <div class="container">
     
-    <div class="d-grid col-4 gap-3 mx-auto">
+    <div class="d-grid col-12 col-md-4 text-center gap-3 mx-auto">
       <div class="">
         <button 
           *ngFor="let opcion of [2, 5, 10, 20, 30, 50]"
@@ -139,6 +171,10 @@
           +{{opcion}}
         </button>
       </div>
+    </div>
+    <div class="d-grid col-12 col-md-4 text-center mx-auto">
+      <p class="">Total a Pagar</p>
+      <p class="section-lottery">Bs {{ totalPagar }}</p>
     </div>
 
     <div class="d-flex items-center justify-content-center my-4 gap-2">
@@ -169,9 +205,16 @@
             formControlName="nombre"
             placeholder="Nombres y Apellidos" 
             required>
+            
+            <!-- Validaciones -->
             <div class="alert alert-danger mt-2" 
               *ngIf="this.userForm.get('nombre')?.errors?.['required']" [hidden]="nombre.valid || nombre.pristine">
               (El nombre no puede quedar vacío)
+            </div>
+            <div *ngIf="userForm.get('nombre')?.touched && userForm.get('nombre')?.invalid" class="error">
+              <div class="alert alert-danger" *ngIf="userForm.get('nombre')?.errors?.['required']">El nombre es obligatorio.</div>
+              <div class="alert alert-danger" *ngIf="userForm.get('nombre')?.errors?.['minlength']">Debe tener al menos 3 caracteres.</div>
+              <div class="alert alert-danger" *ngIf="userForm.get('nombre')?.errors?.['pattern']">Solo se permiten letras y espacios.</div>
             </div>
         </div>
         <div class="col-md-6">
@@ -182,26 +225,56 @@
               <option value="" disabled selected>+00</option>
               <option *ngFor="let codigo of codigosDeArea" [value]="codigo">{{ codigo }}</option>
             </select>
-  
+            
             <input type="text" 
               formControlName="celular"
               class="form-control w-100"  
               placeholder="Celular"
               required>
+
           </div>
-
-             <!-- Validaciones -->
-             <div class="alert alert-danger" *ngIf="celular?.invalid && (celular?.dirty || celular?.touched)">
-              <small  *ngIf="celular?.errors?.['required']">Se requiere número de teléfono.</small>
-              <small  *ngIf="celular?.errors?.['pattern']">Formato de número de teléfono no válido.</small>
-            </div>
-            <div class="alert alert-danger mt-2" *ngIf="codigoArea?.invalid && (codigoArea?.dirty || codigoArea?.touched)">
-              <small>Debes seleccionar un código de área.</small>
-            </div>
-
-           
+              <!-- Validaciones Celular -->
+              <div *ngIf="userForm.get('celular')?.touched && userForm.get('celular')?.invalid" class="error">
+                <div class="alert alert-danger" *ngIf="userForm.get('celular')?.errors?.['required']">El celular es obligatorio.</div>
+                <div class="alert alert-danger" *ngIf="userForm.get('celular')?.errors?.['pattern']">Número inválido. Solo se permiten de 7 a 15 dígitos.</div>
+              </div>
+              <!-- Validaciones Codigo-->
+               <div *ngIf="userForm.get('codigoArea')?.touched && userForm.get('codigoArea')?.invalid" class="error">
+                <div class="alert alert-danger" *ngIf="userForm.get('codigoArea')?.errors?.['required']">El código de área es obligatorio.</div>
+                <div class="alert alert-danger" *ngIf="userForm.get('codigoArea')?.errors?.['minlength']">Mínimo 2 dígitos.</div>
+                <div class="alert alert-danger" *ngIf="userForm.get('codigoArea')?.errors?.['maxlength']">Máximo 4 dígitos.</div>
+              </div>
+              
         </div>
-        
+      </div>
+
+      <div class="row pt-2">
+        <div class="col-md-6">
+          <input type="text" 
+            formControlName="cedula"
+            class="form-control w-100"  
+            placeholder="Cédula"
+          >
+          <!-- Validaciones cedula-->
+          <div *ngIf="userForm.get('cedula')?.touched && userForm.get('cedula')?.invalid" class="error">
+            <div class="alert alert-danger" *ngIf="userForm.get('cedula')?.errors?.['required']">La cédula es obligatoria.</div>
+            <div class="alert alert-danger" *ngIf="userForm.get('cedula')?.errors?.['pattern']">Debe contener entre 6 y 10 dígitos numéricos.</div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <input type="text" 
+            formControlName="correo"
+            class="form-control w-100"  
+            placeholder="Correo electrónico"
+          >
+          <!-- Validaciones correo-->
+          <div *ngIf="userForm.get('correo')?.touched && userForm.get('correo')?.invalid" class="error">
+            <div class="alert alert-danger" *ngIf="userForm.get('correo')?.errors?.['required']">El correo es obligatorio.</div>
+            <div class="alert alert-danger" *ngIf="userForm.get('correo')?.errors?.['email']">El formato del correo no es válido.</div>
+          </div>
+        </div>
+         
+          
       </div>
     </div>
 
@@ -263,7 +336,7 @@
     <div class="col-12 pt-4 pb-3">
       <h3 class="title-loterry color-lottery">
         <i class="fa fa-user-circle" aria-hidden="true"></i> 
-        COMPROBANTE DE BOLETO
+        RESERVA TU COMPRA
       </h3>
       <div class="row">
         <div class="col-md-6 mx-auto">
@@ -272,7 +345,8 @@
             class="btn btn-lottery" 
             data-bs-toggle="modal"
             [disabled]="isButtonDisabled" 
-            data-bs-target="#exampleModal">
+            data-bs-target="#exampleModal"
+            data-bs-backdrop="static">
               Confirmar
           </button> 
         </div>
@@ -286,7 +360,7 @@
 
 
 
-<div class="container boleto-word" *ngIf="isUser" >
+<!-- <div class="container boleto-word" *ngIf="isUser" >
   <div id="ID_DIV">
     <h3 class="title-loterry pt-4 color-lottery">BOLETO DE USUARIO</h3>
     <div class="row col-12">
@@ -314,27 +388,35 @@
       <i class="fa fa-print title-loterry" aria-hidden="true"> Imprimir Boleto</i>
     </a>
   </div>  
-</div>
+</div> -->
 
 
 <app-footer></app-footer>
 
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div 
+  class="modal fade" 
+  id="exampleModal" 
+  tabindex="-1" 
+  aria-labelledby="exampleModalLabel" 
+  aria-hidden="true"
+  data-bs-backdrop="static" 
+  data-bs-keyboard="false">
   <div class="modal-dialog">
-    
-    <div class="modal-content">
+    <div class="modal-content" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-header">
         <h5 
           class="modal-title" 
           id="exampleModalLabel">
-          ¡Ya estas a pocos paso! {{ userForm.value.nombre | json }}
+          ¡Ya estas a pocos paso! {{ userForm.value.nombre }}
         </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
       </div>
       <div class="modal-body">
-        <p>Tus Boletos números {{ numeroelegido | json }} fueron registrados correctamente!</p>
+        <p style="word-wrap: break-word;">Tus Boletos números {{ numeroelegido  }} fueron registrados correctamente!</p>
+        <p class="title-loterry">Precio por número.: <em style="font-weight: 200;">$20</em></p>
+        <p class="title-loterry">Precio Total.:<em style="font-weight: 200;">$ {{ getTotalPrice() }}</em></p>
         <p>El evento se transmitirá el día 30 DIC 2024 a las 08:00 PM en nuestro canal.</p>
         <p *ngIf="bancoelegido">
         Realiza tu pago directamente en nuestra cuenta bancaria elegida: <br>
@@ -359,7 +441,13 @@
         No has elegido un numero<br>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <a class="btn btn-success" href="https://rifas-democom.web.app/rifa002">
+          Seguir comprando
+        </a>
+        
+        <a class="btn btn-secondary" href="https://rifas-democom.web.app/">
+          Ir al Home
+        </a>  
       </div>
     </div>
   </div>

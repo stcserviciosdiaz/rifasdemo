@@ -4,9 +4,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatMenuModule } from '@angular/material/menu';
 import { RouterModule } from '@angular/router';
+import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 
 @Component({
-  selector: 'app-faqs',
+  selector: 'app-nav',
   templateUrl: './nav.component.html',
   styleUrls: ['./nav.component.css'],
   standalone: true,
@@ -19,5 +20,10 @@ import { RouterModule } from '@angular/router';
   ]
 })
 export class NavComponent {
+
+
+  
+
+
 
 }

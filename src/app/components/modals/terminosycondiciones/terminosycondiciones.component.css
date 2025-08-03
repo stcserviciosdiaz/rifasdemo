@@ -1,0 +1,15 @@
+.toast-container {
+    z-index: 1055;
+  }
+
+.bg-black{
+  background-color: black;
+}
+
+.color-white{
+  color: white;
+}
+
+.fx-13{
+  font-size: 13px;
+}

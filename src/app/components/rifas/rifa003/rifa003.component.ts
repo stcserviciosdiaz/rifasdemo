@@ -23,7 +23,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatStepperModule} from '@angular/material/stepper';
 import { DialogContentExampleDialog } from '../../dialog/dialog.component';
 import { FooterComponent } from '../../footer/footer.component';
-import { FirebaseService } from 'src/app/services/firestore.service';
+import { FirebaseService } from 'src/app/services/firebase.service';
 
 @Component({
   selector: 'app-rifa003',
@@ -121,7 +121,7 @@ export class Rifa003Component implements OnInit {
 
   imagendelarifa = [
     { id:'1', 
-      imagen:'bannerdemoc-12.jpg',
+      imagen:'lottery02.jpg',
     },
   ];
   

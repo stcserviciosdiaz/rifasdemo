@@ -5,14 +5,20 @@ import { HomeComponent } from './components/home/home.component';
 import { Rifa001Component } from './components/rifas/rifa001/rifa001.component';
 import { Rifa002Component } from './components/rifas/rifa002/rifa002.component';
 import { Rifa003Component } from './components/rifas/rifa003/rifa003.component';
-
-
+import { LoginComponent } from './components/consultas/login.component';
+import { AdminComponent } from './components/consultas/admin/admin.component';
+import { AuthGuard } from './guards/auth.guard';
 
 
 export const routes: Routes = [
   {
     path: '', redirectTo: '/', pathMatch: 'full'
   },
+   
+  { path: 'login', component: LoginComponent },
+
+  { path: 'admin', component: AdminComponent, canActivate: [AuthGuard] },
+
   {
     path: '',
     component: HomeComponent
@@ -33,6 +39,7 @@ export const routes: Routes = [
     path: 'rifa003',
     component: Rifa003Component
   },
+  
   {
     path: '**',
     component: PageNotFoundComponent

@@ -1,4 +1,4 @@
-<app-faqs></app-faqs>
+<app-nav></app-nav>
 
 
 
@@ -66,40 +66,45 @@
                   <h5 class="modal-title" id="exampleModalLabel">Buscar compras</h5>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <!-- Formulario para Buscar Boleto -->
-                <p>Ingrese su número de Celular</p>  
-                <form [formGroup]="form" (ngSubmit)="getRaffleData(); $event.preventDefault();" class="d-flex">
-                  <input 
-                    class="form-control me-2" 
-                    formControlName="celular" 
-                    type="text" 
-                    placeholder="-------" 
-                    aria-label="Search" 
-                    required>
-                  <button class="btn btn-lottery" type="submit">Buscar boleto</button>
-                </form>
-                <div class="mostrar_data">
-                  <!-- Solo mostrar la lista si ya se ha realizado la consulta y hay items válidos -->
-                  <ul *ngIf="modalItems && modalItems.length > 0">
-                    <li *ngFor="let item of modalItems">
-                      <!-- Solo mostrar datos válidos -->
-                      <ng-container *ngIf="item.nombre || item.celular || (item.elegirnumero && item.elegirnumero.length > 0)">
-                        <strong *ngIf="item.nombre">Nombre:</strong> {{ item.nombre }}<br>
-                        <strong *ngIf="item.celular">Celular:</strong> {{ item.celular }}<br>
-                        <!-- Mostrar "Números Elegidos" solo si existen números -->
-                        <strong *ngIf="item.elegirnumero && item.elegirnumero.length > 0">Números Elegidos:</strong>
-                        <ul *ngIf="item.elegirnumero && item.elegirnumero.length > 0">
-                          <li *ngFor="let numero of item.elegirnumero">{{ numero }}</li>
-                        </ul>
-                      </ng-container>
-                    </li> 
-                  </ul>
-                  <!-- Mostrar mensaje si no hay datos disponibles (solo después de hacer la consulta) -->
-                  <p *ngIf="modalItems && modalItems.length === 0">No se encontraron datos.</p>
+
+                <div class="modal-body">
+                  <!-- Buscador -->
+                   <p>Ingrese su número de celular</p>
+                  <form [formGroup]="form" (ngSubmit)="getRaffleData(); $event.preventDefault();" class="input-group">
+                    <input 
+                      class="form-control" 
+                      type="text" 
+                      formControlName="valorBusqueda"
+                      placeholder="----------"
+                      required>
+                    <button class="btn btn-outline-secondary  btn-lottery" type="submit">
+                      <i class="fa fa-search"></i> Buscar
+                    </button>
+                  </form>
+
+                  <!-- Resultado de la búsqueda -->
+                  <div class="mostrar_data mt-3">
+                    <ul *ngIf="modalItems && modalItems.length > 0">
+                      <li *ngFor="let item of modalItems">
+                        <ng-container *ngIf="item.nombre || item.celular || (item.elegirnumero && item.elegirnumero.length > 0)">
+                          <strong *ngIf="item.nombre">Nombre:</strong> {{ item.nombre }}<br>
+                          <strong *ngIf="item.celular">Celular:</strong> {{ item.celular }}<br>
+                          <strong *ngIf="item.cedula">Cédula:</strong> {{ item.cedula }}<br>
+                          <strong *ngIf="item.correo">Correo:</strong> {{ item.correo }}<br>
+                          <strong *ngIf="item.elegirnumero?.length">Números Elegidos:</strong>
+                          <ul>
+                            <li *ngFor="let numero of item.elegirnumero">{{ numero }}</li>
+                          </ul>
+                        </ng-container>
+                      </li>
+                    </ul>
+                    <p *ngIf="modalItems && modalItems.length === 0">No se encontraron datos.</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+          
         </div>
       </div>
     </div>
