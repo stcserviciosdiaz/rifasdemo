@@ -3,7 +3,8 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs, addDoc, doc, query, where } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { environment } from 'src/environments/environment';
-
+import { Functions, httpsCallable, getFunctions } from '@angular/fire/functions';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -14,18 +15,15 @@ export class FirebaseService {
   private auth = getAuth(this.firebaseApp);
 
   public items: any[] = [];  // Para almacenar los datos de Firestore
- 
 
-  constructor() {
+  constructor(private fns: Functions, private http: HttpClient) {
     const app = initializeApp(environment.firebase);
     this.firestore = getFirestore(app);
-    
   }
 
   login(email: string, password: string) {
     return signInWithEmailAndPassword(this.auth, email, password);
   }
-
 
   // Método para guardar datos
   async addData(collectionName: string, data: any) {
@@ -49,11 +47,6 @@ export class FirebaseService {
 
     return disabledNumbers.map((num: any) => num.toString()); // Convierte a strings
   }
-
-
-
-
-
 
 
 async getCollectionDataByField(
@@ -115,13 +108,5 @@ async getCollectionDataByField(
     return [];
   }
 }
-
-
-
-
-
-  
-
-
 
 }

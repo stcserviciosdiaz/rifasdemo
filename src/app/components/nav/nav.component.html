@@ -6,6 +6,23 @@
             <h4 class="text-white">Compra tu ticket y participa por premios Increibles</h4>
             <p class="text-muted">
               [Nombre de la Empresa] se reserva el derecho de actualizar estas políticas en cualquier momento sin previo aviso. Las modificaciones entrarán en vigor inmediatamente después de su publicación en nuestra página web.</p>
+              <div class="d-flex justify-content-center gap-10">
+                <div class="" 
+                *ngFor="let loteria of loteriadelarifa">
+                  <img *ngIf="loteria.id === idSeleccionado1"
+                    class="w80 h80"
+                    [src]="'../../../assets/images/' + loteria.imagen"
+                    alt="">
+                  <img *ngIf="loteria.id === idSeleccionado2"
+                    class="w80 h80"
+                    [src]="'../../../assets/images/' + loteria.imagen"
+                    alt="">
+                  <img *ngIf="loteria.id === idSeleccionado3"
+                    class="w80 h80"
+                    [src]="'../../../assets/images/' + loteria.imagen"
+                    alt="">
+                </div>
+              </div>
           </div>
           <div class="col-sm-4 offset-md-1 py-4">
             <h4 class="text-white">Contacto</h4>
@@ -34,11 +51,12 @@
     </div>
     <div class="navbar navbar-dark bg-dark shadow-sm justify-content-center">
       <div class="row">
-        <div class="col-md-6 col-12 text-md-left text-center">
+        <div class="col-md-6 col-12 text-md-left text-center"
+        *ngFor="let rifaoff of logodelarifa">
           <a href="#">
             <img 
-            class="logo-rifa "
-            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhShuZLBhKY6u06m0lzMIW5lB2vI-_NEcCUi4Lm0rNehiwVw_iB625p9YmYTrtheR_jQvb4C1eIpKrDwr0n_jwNOMcdNKuek79wn86QCJBv7-bhaafn8ZPuJBkQ8nlH7SGV7Bo4tVa2FhD_grlHYXUiz4x1gIZpUAGVvYB4Y9j47bgiTeK1zg6u0Jbpq0ii/s416/LOGO.png">
+            class="logo-rifa"
+            src="../../../assets/images/{{ rifaoff.imagen }}" alt=""> 
           </a>
         </div>
         <div class="col-md-6 col-12">

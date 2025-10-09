@@ -10,6 +10,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatChipsModule} from '@angular/material/chips';
 import { MatDialog, MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
+import { NumerosService  } from '../../../services/numeros.service'
 
 import * as alertify from 'alertifyjs';
 
@@ -56,25 +57,25 @@ import { FirebaseService } from 'src/app/services/firebase.service';
 
 export class Rifa001Component implements OnInit {
   
-  public items: any = [
-    { id: 1, price: 2, disabled: false},
-    { id: 2, price: 2, disabled: false},
-    {id: 3,price: 2,},{id: 4,price: 2,},{id: 5,price: 2,},{id: 6,price: 2,},{id: 7,price: 2,},{id: 8,price: 2,},{id: 9,price: 2,},{id: 10,price: 2,},
-    {id: 11,price: 2,},{id: 12,price: 2,},{id: 13,price: 2,},{id: 14,price: 2,},{id: 15,price: 2,},{id: 16,price: 2,},{id: 17,price: 2,},{id: 18,price: 2,},{id: 19,price: 2,},{id: 20,price: 2,},
-    {id: 21,price: 2,},{id: 22,price: 2,},{id: 23,price: 2,},{id: 24,price: 2,},{id: 25,price: 2,},{id: 26,price: 2,},{id: 27,price: 2,},{id: 28,price: 2,},{id: 29,price: 2,},{id: 30,price: 2,},
-    {id: 31,price: 2,},{id: 32,price: 2,},{id: 33,price: 2,},{id: 34,price: 2,},{id: 35,price: 2,},{id: 36,price: 2,},{id: 37,price: 2,},{id: 38,price: 2,},{id: 39,price: 2,},{id: 40,price: 2,},
-    {id: 41,price: 2,},{id: 42,price: 2,},{id: 43,price: 2,},{id: 44,price: 2,},{id: 45,price: 2,},{id: 46,price: 2,},{id: 47,price: 2,},{id: 48,price: 2,},{id: 49,price: 2,},{id: 50,price: 2,},
-    {id: 51,price: 2,},{id: 52,price: 2,},{id: 53,price: 2,},{id: 54,price: 2,},{id: 55,price: 2,},{id: 56,price: 2,},{id: 57,price: 2,},{id: 58,price: 2,},{id: 59,price: 2,},{id: 60,price: 2,},
-    {id: 61,price: 2,},{id: 62,price: 2,},{id: 63,price: 2,},{id: 64,price: 2,},{id: 65,price: 2,},{id: 66,price: 2,},{id: 67,price: 2,},{id: 68,price: 2,},{id: 69,price: 2,},{id: 70,price: 2,},
-    {id: 71,price: 2,},{id: 72,price: 2,},{id: 73,price: 2,},{id: 74,price: 2,},{id: 75,price: 2,},{id: 76,price: 2,},{id: 77,price: 2,},{id: 78,price: 2,},{id: 79,price: 2,},{id: 80,price: 2,},
-    {id: 81,price: 2,},{id: 82,price: 2,},{id: 83,price: 2,},{id: 84,price: 2,},{id: 85,price: 2,},{id: 86,price: 2,},{id: 87,price: 2,},{id: 88,price: 2,},{id: 89,price: 2,},{id: 90,price: 2,},
-    {id: 91,price: 2,},{id: 92,price: 2,},{id: 93,price: 2,},{id: 94,price: 2,},{id: 95,price: 2,},{id: 96,price: 2,},{id: 97,price: 2,},{id: 98,price: 2,},{id: 99,price: 2,},{id: 100,price: 2,},
-    {id: 101,price: 2,},{id: 102,price: 2,},{id: 103,price: 2,},{id: 104,price: 2,},{id: 105,price: 2,},{id: 106,price: 2,},{id: 107,price: 2,},{id: 108,price: 2,},{id: 109,price: 2,},{id: 110,price: 2,},
-    {id: 111,price: 2,},{id: 112,price: 2,},{id: 113,price: 2,},{id: 114,price: 2,},{id: 115,price: 2,},{id: 116,price: 2,},{id: 117,price: 2,},{id: 118,price: 2,},{id: 119,price: 2,},{id: 120,price: 2,},
-    {id: 121,price: 2,},{id: 122,price: 2,},{id: 123,price: 2,},{id: 124,price: 2,},{id: 125,price: 2,},{id: 126,price: 2,},{id: 127,price: 2,},{id: 128,price: 2,},{id: 129,price: 2,},{id: 130,price: 2,},
-    {id: 131,price: 2,},{id: 132,price: 2,},{id: 133,price: 2,},{id: 134,price: 2,},{id: 135,price: 2,},{id: 136,price: 2,},{id: 137,price: 2,},{id: 138,price: 2,},{id: 139,price: 2,},{id: 140,price: 2,},
-    {id: 141,price: 2,},{id: 142,price: 2,},{id: 143,price: 2,},{id: 144,price: 2,},
-  ];
+  public currentPage: number = 1;
+  public itemsPerPage: number = 5000;
+
+  // Obtener los elementos de la página actual
+  get paginatedItems() {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.items.slice(start, end);
+  }
+
+  // Cambiar página
+  changePage(page: number) {
+    this.currentPage = page;
+  }
+
+  // Obtener el número total de páginas
+  get totalPages(): number {
+    return Math.ceil(this.items.length / this.itemsPerPage);
+  }
 
   modalItems: any[] = []; // Para los datos del modal
 
@@ -96,6 +97,8 @@ export class Rifa001Component implements OnInit {
 
   isSubmit = true;
 
+  numeroelegidoFormateado = this.numeroelegido.toString().padStart(4, '0');
+
   isUser = false;
 
   bancoelegidoId: number | null = null;
@@ -103,42 +106,51 @@ export class Rifa001Component implements OnInit {
   form: FormGroup;
   //celular: string = ''; // Variable para almacenar el número de celular ingresado
 
+  idSeleccionado1 = '1';
+  idSeleccionado2 = '2';
+  idSeleccionado3 = '3';
+
+  loteriadelarifa = [
+    { id:'1', 
+      imagen:'conalot.png',
+    },
+    { id:'2', 
+      imagen:'tachira.png',
+    },
+    { id:'3', 
+      imagen:'supergana.png',
+    },
+  ];
+
   listadebancos = [
     { id: 1,
-      banco: 'BBVA ProvincialBANCO EXTERIOR, C.A',
-      titular: 'Rifas', 
-      numero: '5180936787222195',
+      banco: 'Banco Mercantil',
+      cedula: 'V0000000',
+      titular: 'Rifas Demo', 
+      numero: '0416-2530453',
       imagen:'banco1.png',
     },
     { id: 2,
-      banco: 'BANCO DE VENEZUELA, S.A.C.A.',
-      titular: 'Rifas', 
-      numero: '5257393708612336',
+      banco: 'Zelle',
+      titular: 'Rifas Demo', 
+      numero: 'rifademoss@gmail.com',
       imagen:'banco2.png',
-    },
-    { id: 3,
-      banco: 'BANCO CARACAS, C.A',
-      titular: 'Rifas', 
-      numero: '5547904706150846',
-      imagen:'banco3.png',
     },
   ];
 
   imagendelarifa = [
     { id:'1', 
-      imagen:'lottery01.jpg',
+      imagen:'rifa001.jpg',
     },
   ];
   
-  
-   public disabledIds: any [] = []; // Aquí guardamos los IDs deshabilitados
+  public disabledIds: any [] = []; // Aquí guardamos los IDs deshabilitados
 
   prices: { [key: number]: number } = {}; // Diccionario para almacenar los precios asociados a cada número
 
   progressPercentage: number = 0;
-
-  campoBusqueda: 'celular' | 'cedula' = 'celular'; // valor por defecto 
-
+  
+  public items: any[] = [];
   //public celular: string = ''; // Variable para el número de celular ingresado
   
   constructor(
@@ -146,7 +158,8 @@ export class Rifa001Component implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private firebaseService: FirebaseService,
-    private cdr: ChangeDetectorRef // Inyecta ChangeDetectorRef
+    private cdr: ChangeDetectorRef, // Inyecta ChangeDetectorRef
+    private numerosService: NumerosService
 
    
     
@@ -156,13 +169,14 @@ export class Rifa001Component implements OnInit {
       celular: ['']
     });
 
-    this.form = this.fb.group({
+     this.form = this.fb.group({
       campoBusqueda: ['celular', Validators.required], // Por defecto celular
       valorBusqueda: ['', Validators.required]
     });
-
-    
   }
+
+
+  
 
   
 
@@ -174,12 +188,39 @@ export class Rifa001Component implements OnInit {
     return this.userForm.get('celular') as FormControl;
   }
 
+  get cedula(){
+    return this.userForm.get('cedula') as FormControl;
+  }
+
+  get correo(){
+    return this.userForm.get('correo') as FormControl;
+  }
+
   get codigoArea() {
     return this.userForm.get('codigoArea');
   }
 
+  generateNumbers(total: number): any[] {
+    const generatedItems = [];
+
+    for (let i = 1; i <= total; i++) {
+      const id = i.toString().padStart(4, '0'); // ejemplo: 00001, 00002
+      generatedItems.push({
+        id,
+        price: 3,
+        disabled: false
+      });
+    }
+
+    return generatedItems;
+  }
+
+
+
 
   async ngOnInit() {
+    this.items = this.numerosService.getNumeros();
+
     this.getRaffleData(); // Llamar a la función para obtener los datos al iniciar el componente
     //this.startCountdown();
 
@@ -190,6 +231,10 @@ export class Rifa001Component implements OnInit {
     this.userForm.valueChanges.subscribe(() => {
       this.updateButtonState();
     });
+
+    if(this.listadebancos.length === 1){
+      this.elegirbancos(this.listadebancos[0].id);
+    }
 
     this.firebaseService.getDisabledNumbersFromCollection('lottery01')
       .then(numbers => {
@@ -215,6 +260,12 @@ export class Rifa001Component implements OnInit {
       });
   }
 
+
+
+
+
+
+
   isDisabled(id: number) {
     const disabled = this.disabledIds.includes(id.toString());
     return disabled;
@@ -230,9 +281,29 @@ export class Rifa001Component implements OnInit {
   
 
   userForm = this.fb.group({
-    'codigoArea': ['', Validators.required],
-    'nombre': ['', Validators.required,],
-    'celular': ['', [Validators.required, Validators.pattern('^\\+?[0-9]\\d{1,14}$')]]
+    codigoArea: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(4)]],
+
+    nombre: ['', [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$')  // Solo letras y espacios
+    ]],
+
+    cedula: ['', [
+      Validators.required,
+      Validators.pattern('^[0-9]{6,10}$') // entre 6 y 10 dígitos
+    ]],
+
+    correo: ['', [
+      Validators.required,
+      Validators.email // validación de correo estándar
+    ]],
+
+    celular: ['', [
+      Validators.required,
+      Validators.pattern('^[0-9]{7,15}$') // solo números, 7 a 15 dígitos
+    ]]
+    
   })
 
   // Función para actualizar el estado del botón
@@ -241,24 +312,25 @@ export class Rifa001Component implements OnInit {
     this.showNumberMessage = this.numeroelegido.length > 0 && this.numeroelegido.length < 2;
   }
 
-  confirmarBoleto(){
+  confirmarBoleto() {
     if (this.numeroelegido.length >= 2) {
       const formData = this.userForm.value;
       const selectedData = {
         form: formData,
         elegirnumero: this.numeroelegido
       };
-      this.firebaseService.addData('lottery01', selectedData )
-      this.submitMessage = alertify.success('Gracias por participar, Muchas suerte... ');
+
+      this.firebaseService.addData('lottery01', selectedData);
+      alertify.success('Gracias por participar, ¡Mucha suerte!');
       
       this.isUser = true;
-      setTimeout(()=>{
-        this.isSubmit=false;
-      },800);
-    }else{
-      this.showAlertModal();  // Mostrar alerta si intentan enviar sin suficientes números
+      setTimeout(() => {
+        this.isSubmit = false;
+      }, 800);
+
+    } else {
+      this.showAlertModal();
     }
-    
   }
 
 
@@ -267,41 +339,41 @@ export class Rifa001Component implements OnInit {
   
 
   getRaffleData(): void {
-  let campo = this.form.get('campoBusqueda')?.value?.trim().toLowerCase();
-  const valor = this.form.get('valorBusqueda')?.value?.trim();
+    let campo = this.form.get('campoBusqueda')?.value?.trim().toLowerCase();
+    const valor = this.form.get('valorBusqueda')?.value?.trim();
 
-  if (campo === 'cédula') campo = 'cedula'; // normalizar
+    if (campo === 'cédula') campo = 'cedula'; // normalizar
 
-  if (!valor || (campo !== 'celular' && campo !== 'cedula')) {
-    this.modalItems = [];
-    return;
-  }
-
-  this.modalItems = [];
-
-  this.firebaseService.getCollectionDataByField('lottery01', campo as 'celular' | 'cedula', valor)
-    .then(data => {
-      if (data.length > 0) {
-        this.modalItems = data.map(item => ({
-          celular: item.celular || 'No disponible',
-          nombre: item.nombre || 'No disponible',
-          cedula: item.cedula || 'No disponible',
-          correo: item.correo || 'No disponible',
-          elegirnumero: Array.isArray(item.elegirnumero)
-            ? item.elegirnumero.map((num: number | string) => String(num).padStart(4, '0'))
-            : []
-        }));
-      } else {
-        alertify.error('No se encontraron datos.');
-        this.modalItems = [];
-      }
-      this.cdr.detectChanges();
-    })
-    .catch(error => {
-      console.error('Error:', error);
+    if (!valor || (campo !== 'celular' && campo !== 'cedula')) {
       this.modalItems = [];
-    });
-}
+      return;
+    }
+
+    this.modalItems = [];
+
+    this.firebaseService.getCollectionDataByField('lottery01', campo as 'celular' | 'cedula', valor)
+      .then(data => {
+        if (data.length > 0) {
+          this.modalItems = data.map(item => ({
+            celular: item.celular || 'No disponible',
+            nombre: item.nombre || 'No disponible',
+            cedula: item.cedula || 'No disponible',
+            correo: item.correo || 'No disponible',
+            elegirnumero: Array.isArray(item.elegirnumero)
+              ? item.elegirnumero.map((num: number | string) => String(num).padStart(4, '0'))
+              : []
+          }));
+        } else {
+          alertify.error('No se encontraron datos.');
+          this.modalItems = [];
+        }
+        this.cdr.detectChanges();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        this.modalItems = [];
+      });
+  }
   
  
   
@@ -337,34 +409,52 @@ export class Rifa001Component implements OnInit {
     this.bancoelegido = this.listadebancos.find(banco => banco.id === id);
   }
 
+  
   getClassbancoelegido(id: number): string {
     return this.bancoelegidoId === id ? 'selected' : 'not-selected';
   }
 
-  getTotalPrice(): number {
+  /* getTotalPrice(): number {
     let total = 0;
     this.precioelegido.forEach(item => {
       total += item;
     });
     return this.numeroelegido.reduce((total, num) => total + this.prices[num], 0);
+  } */
+  getTotalPrice(): number {
+    return this.numeroelegido.reduce((total, id) => {
+      const item = this.items.find(i => i.id === id.toString().padStart(4, '0'));
+      return item ? total + item.price : total;
+    }, 0);
   }
 
 
   // Generar enlace para enviar mensaje a WhatsApp
   generarEnlaceWhatsApp(): string {
     const baseUrl = 'https://api.whatsapp.com/send';
-    const numeroSoporte = '+322323232323'; // Cambia esto por el número real de soporte
-    const mensaje = `Hola, quiero confirmar mi compra. Mis boletos elegidos son: ${this.numeroelegido.join(', ')}. 
-    Por favor, realiza el pago en la cuenta ${this.bancoelegido?.banco}, 
-    número ${this.bancoelegido?.numero}, titular ${this.bancoelegido?.titular}.`;
+    const numeroSoporte = '+5804129174037'; // SIN "+"
+    const nombre = this.userForm.get('nombre')?.value || 'Cliente';
 
-    const url = `${baseUrl}?phone=${numeroSoporte}&text=${encodeURIComponent(mensaje)}`;
+    const boletos = this.numeroelegido
+      .map((num: number | string) => String(Number(num)).padStart(4, '0'))
+      .join(', ');
+
+    let mensaje = `Hola, soy ${nombre}. Quiero confirmar mi compra. Mis boletos elegidos son: ${boletos}. `;
+    mensaje += `Por favor, realiza el pago en la cuenta ${this.bancoelegido?.banco}, número ${this.bancoelegido?.numero}, titular ${this.bancoelegido?.titular}.`;
+
+    if (this.bancoelegido?.id === 1) {
+      mensaje += ` Cédula/RIF: ${this.bancoelegido?.cedula}`;
+    }
+
+    // LIMPIA y codifica correctamente el mensaje
+    const mensajeCodificado = encodeURIComponent(mensaje.trim().replace(/\n/g, ' '));
+
+    const url = `${baseUrl}?phone=${numeroSoporte}&text=${mensajeCodificado}`;
     return url;
   }
 
 
 
- 
 
   // Componente TypeScript
   copiarNumeroCuenta(event: MouseEvent) { 
@@ -381,16 +471,5 @@ export class Rifa001Component implements OnInit {
     alertify.error('Número de cuenta no disponible');
   }
 }
-
-
- 
-  
-  
-  
-
-
-
-
-
 
 }

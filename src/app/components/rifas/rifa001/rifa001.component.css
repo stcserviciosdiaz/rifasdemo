@@ -1,5 +1,5 @@
 .bg-img{
-  height: 650px;
+  
   width: 100%;
 }
 .text-align-left{
@@ -160,7 +160,7 @@ p.lead {
 }
 
 .disabled {
-  background-color: rgb(255 162 0 / 80%);
+  background-color: rgb(255 203 4);
   color: #721c24;
   opacity: 0.65;
   pointer-events: none;
@@ -171,7 +171,7 @@ p.lead {
 }
 
 .not-selected {
-  opacity: 0.5;
+  opacity: 1;
 }
 
 .fuente-banco{
@@ -200,6 +200,48 @@ button.btn-copy {
   box-shadow: 0 0 18px #07768f4a;
 }
 
+.pagination {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.pagination button {
+  margin: 2px;
+  border: 1px solid #ccc;
+  font-size: 18px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #fff;
+  padding: 12px 40px !important;
+  cursor: pointer;
+  background-color: #ffa200;
+  border-color: #ffa200;
+  box-shadow: 0 0 18px #ffa200;
+  border-radius: 50px;
+}
+
+.pagination button.active {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
   
+}
+
+.cuadrorifa{
+  background: #fff;
+  border-radius: 26px !important;
+  box-sizing: border-box;
+  box-shadow: 0px 24px 60px -1px rgba(37, 44, 54, 0.14);
+  padding: 30px 50px;
+  margin: 0 auto;
+  max-width: 1080px;
+}
   
-  
+.details-premio {
+  max-height: 200px;
+  margin-bottom: 20px;
+  box-shadow: 0px 24px 60px -1px rgba(37, 44, 54, 0.14);
+  padding: 15px 10px 10px 15px;
+}

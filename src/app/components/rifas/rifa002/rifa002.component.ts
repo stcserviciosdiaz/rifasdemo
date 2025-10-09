@@ -25,12 +25,14 @@ import {MatStepperModule} from '@angular/material/stepper';
 import { DialogContentExampleDialog } from '../../dialog/dialog.component';
 import { FooterComponent } from '../../footer/footer.component';
 import { FirebaseService } from 'src/app/services/firebase.service';
+import { EmailService } from 'src/app/services/email.service';
 
 @Component({
   selector: 'app-rifa002',
   templateUrl: './rifa002.component.html',
   styleUrls: ['./rifa002.component.css'],
   standalone: true,
+  providers: [EmailService],
   imports: [
     FooterComponent,
     MatExpansionModule,
@@ -111,21 +113,22 @@ export class Rifa002Component implements OnInit {
 
   listadebancos = [
     { id: 1,
-      banco: 'BBVA ProvincialBANCO EXTERIOR, C.A',
-      titular: 'Rifas', 
-      numero: '5180936787222195',
+      banco: 'Pago Móvil',
+      titular: 'Demo', 
+      cedula: 'V-000000',
+      telefono: '00000000',
       imagen:'banco1.png',
     },
     { id: 2,
-      banco: 'BANCO DE VENEZUELA, S.A.C.A.',
-      titular: 'Rifas', 
-      numero: '5257393708612336',
+      banco: 'Transferencia',
+      numero:'000000000000000',
+      titular: 'Demo', 
+      cedula: 'V-0000000',
       imagen:'banco2.png',
     },
     { id: 3,
-      banco: 'BANCO CARACAS, C.A',
-      titular: 'Rifas', 
-      numero: '5547904706150846',
+      banco: 'Zinli',
+      correo: 'demo@gmail.com',
       imagen:'banco3.png',
     },
   ];
@@ -152,7 +155,8 @@ export class Rifa002Component implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private firebaseService: FirebaseService,
-    private cdr: ChangeDetectorRef // Inyecta ChangeDetectorRef
+    private cdr: ChangeDetectorRef, // Inyecta ChangeDetectorRef
+    private emailService: EmailService
 
    
     
@@ -206,7 +210,7 @@ export class Rifa002Component implements OnInit {
       this.disabledIds = await this.firebaseService.getDisabledNumbersFromCollection('lottery02');
       
       // Generar todos los números (por ejemplo, 1 a 100)
-      const totalNumeros = 100;
+      const totalNumeros = 9999;
       const todosLosNumeros = this.generateNumbers(totalNumeros);
 
       // Selecciona automáticamente los primeros n disponibles
@@ -227,11 +231,10 @@ export class Rifa002Component implements OnInit {
       this.cdr.detectChanges();
       
     } catch (error) {
-      console.error('Error al obtener los números de Firestore:', error);
+      //console.error('Error al obtener los números de Firestore:', error);
     }
     
   }
-
 
 
   generarNumerosAleatorios(cantidad: number): string[] {
@@ -242,18 +245,13 @@ export class Rifa002Component implements OnInit {
       const random = Math.floor(Math.random() * 10000);
       if (!usados.has(random)) {
         usados.add(random);
-        numeros.push(random.toString().padStart(5, '0'));
+        numeros.push(random.toString().padStart(4, '0'));
       }
     }
 
     return numeros;
   }
 
-
-
-
-
-  
 
   elegirCantidadYSeleccionar(cantidad: number) {
     this.cantidadSeleccionada = cantidad;
@@ -296,7 +294,7 @@ export class Rifa002Component implements OnInit {
     const generatedItems = [];
 
     for (let i = 1; i <= total; i++) {
-      const id = i.toString().padStart(5, '0'); // ejemplo: 00001, 00002
+      const id = i.toString().padStart(4, '0'); // ejemplo: 00001, 00002
       generatedItems.push({
         id,
         price: 20,
@@ -307,7 +305,6 @@ export class Rifa002Component implements OnInit {
     return generatedItems;
   }
 
- 
 
 
   seleccionarCantidad(cantidad: number) {
@@ -384,7 +381,7 @@ export class Rifa002Component implements OnInit {
   }
 
 
-  confirmarBoleto() {
+confirmarBoleto() {
   if (this.numeroelegido.length >= 2) {
     const formData = this.userForm.value;
     const selectedData = {
@@ -394,6 +391,17 @@ export class Rifa002Component implements OnInit {
 
     this.firebaseService.addData('lottery02', selectedData);
     alertify.success('Gracias por participar, ¡Mucha suerte!');
+
+    // 1. ✅ CONSTRUIR el objeto 'usuario' esperado por notificarCorreo()
+    const usuarioParaNotificar = {
+        correo: formData.correo,
+        nombre: formData.nombre,
+        // Convertimos el array de números a un string con comas para el email
+        numeros: this.numeroelegido.join(', ') 
+    };
+
+    // 2. ✅ LLAMAR a la función y pasar el objeto como argumento
+    this.notificarCorreo(usuarioParaNotificar); 
     
     //this.isUser = true;
     setTimeout(() => {
@@ -420,41 +428,41 @@ export class Rifa002Component implements OnInit {
 
   
 
-  getRaffleData(): void {
-  let campo = this.form.get('campoBusqueda')?.value?.trim().toLowerCase();
-  const valor = this.form.get('valorBusqueda')?.value?.trim();
+getRaffleData(): void {
+    let campo = this.form.get('campoBusqueda')?.value?.trim().toLowerCase();
+    const valor = this.form.get('valorBusqueda')?.value?.trim();
 
-  if (campo === 'cédula') campo = 'cedula'; // normalizar
+    if (campo === 'cédula') campo = 'cedula'; // normalizar
 
-  if (!valor || (campo !== 'celular' && campo !== 'cedula')) {
-    this.modalItems = [];
-    return;
-  }
-
-  this.modalItems = [];
-
-  this.firebaseService.getCollectionDataByField('lottery02', campo as 'celular' | 'cedula', valor)
-    .then(data => {
-      if (data.length > 0) {
-        this.modalItems = data.map(item => ({
-          celular: item.celular || 'No disponible',
-          nombre: item.nombre || 'No disponible',
-          cedula: item.cedula || 'No disponible',
-          correo: item.correo || 'No disponible',
-          elegirnumero: Array.isArray(item.elegirnumero)
-            ? item.elegirnumero.map((num: number | string) => String(num).padStart(5, '0'))
-            : []
-        }));
-      } else {
-        alertify.error('No se encontraron datos.');
-        this.modalItems = [];
-      }
-      this.cdr.detectChanges();
-    })
-    .catch(error => {
-      console.error('Error:', error);
+    if (!valor || (campo !== 'celular' && campo !== 'cedula')) {
       this.modalItems = [];
-    });
+      return;
+    }
+
+    this.modalItems = [];
+
+    this.firebaseService.getCollectionDataByField('lottery02', campo as 'celular' | 'cedula', valor)
+      .then(data => {
+        if (data.length > 0) {
+          this.modalItems = data.map(item => ({
+            celular: item.celular || 'No disponible',
+            nombre: item.nombre || 'No disponible',
+            cedula: item.cedula || 'No disponible',
+            correo: item.correo || 'No disponible',
+            elegirnumero: Array.isArray(item.elegirnumero)
+              ? item.elegirnumero.map((num: number | string) => String(num).padStart(4, '0'))
+              : []
+          }));
+        } else {
+          alertify.error('No se encontraron datos.');
+          this.modalItems = [];
+        }
+        this.cdr.detectChanges();
+      })
+      .catch(error => {
+        //console.error('Error:', error);
+        this.modalItems = [];
+      });
 }
   
  
@@ -500,42 +508,52 @@ export class Rifa002Component implements OnInit {
 
   getTotalPrice(): number {
     return this.numeroelegido.reduce((total, id) => {
-      const item = this.items.find(i => i.id === id.toString().padStart(5, '0'));
+      const item = this.items.find(i => i.id === id.toString().padStart(4, '0'));
       return item ? total + item.price : total;
     }, 0);
   }
 
 
- generarEnlaceWhatsApp(): string {
-    const baseUrl = 'https://api.whatsapp.com/send';
-    const numeroSoporte = '+5804248070175'; // Número de soporte
-    const nombre = this.userForm.get('nombre')?.value || 'Cliente';
+generarEnlaceWhatsApp(): string {
+  const baseUrl = 'https://api.whatsapp.com/send';
+  const numeroSoporte = '+58000000000'; // Número de soporte
+  const nombre = this.userForm.get('nombre')?.value || 'Cliente';
 
-    // Formatear los boletos a 4 dígitos
-    const boletos = this.numeroelegido
-      .map((num: number | string) => String(Number(num)).padStart(5, '0'))
-      .join(', ');
+  // Formatear los boletos a 4 dígitos
+  const boletos = this.numeroelegido
+    .map((num: number | string) => String(Number(num)).padStart(4, '0'))
+    .join(', ');
 
-    // Calcular el precio total
-    const totalBs = this.getTotalPrice();
+  // Calcular el precio total
+  const totalBs = this.getTotalPrice();
 
-    // Construir el mensaje
-    const mensaje = `Hola, soy ${nombre}. Quiero confirmar mi compra.\n
-    Boletos elegidos: ${boletos}\n
-    Total a pagar: $ ${totalBs}\n
-    Banco: ${this.bancoelegido?.banco}\n
-    Cuenta: ${this.bancoelegido?.numero}\n
-    Titular: ${this.bancoelegido?.titular}\n
-    Por favor, confirma que el pago fue recibido. ¡Gracias!`;
+  // Construir las líneas de banco dinámicamente
+  let infoBanco = '';
+  if (this.bancoelegido) {
+    const partes: string[] = [];
 
-    const url = `${baseUrl}?phone=${numeroSoporte}&text=${encodeURIComponent(mensaje)}`;
-    return url;
+    if (this.bancoelegido.banco) partes.push(`${this.bancoelegido.banco}`);
+    if (this.bancoelegido.titular) partes.push(`${this.bancoelegido.titular}`);
+    if (this.bancoelegido.cedula) partes.push(`${this.bancoelegido.cedula}`);
+    if (this.bancoelegido.telefono) partes.push(`${this.bancoelegido.telefono}`);
+    if (this.bancoelegido.correo) partes.push(`${this.bancoelegido.correo}`);
+
+    if (partes.length > 0) {
+      infoBanco = `\nInformación del Banco Elegido: ${partes.join(' - ')}`;
+    }
   }
 
+  // Construir el mensaje final
+  const mensaje = `Hola, soy ${nombre}. Quiero confirmar mi compra.\n
+  Boletos elegidos: ${boletos}\n
+  Total a pagar: $ ${totalBs}
+  ${infoBanco}\n
+  Por favor, confirma que el pago fue recibido. ¡Gracias!`;
 
+  const url = `${baseUrl}?phone=${numeroSoporte}&text=${encodeURIComponent(mensaje)}`;
+  return url;
+}
 
-
- 
 
   // Componente TypeScript
   copiarNumeroCuenta(event: MouseEvent) { 
@@ -551,6 +569,27 @@ export class Rifa002Component implements OnInit {
   } else {
     alertify.error('Número de cuenta no disponible');
   }
+}
+
+
+async notificarCorreo(usuario: any) {
+    try {
+      const id = await this.emailService.sendMail({
+        to: [{ "email": "elpintor2002@gmail.com" }],
+        from: { email: 'no-reply@test-69oxl5e7kzxl785k.mlsender.net', name: 'Sistema de Rifa' },
+        subject: '🎫 Usuario Registrado',
+          html: `
+          <div style="font-family:sans-serif; color:#333;">
+            <h2>¡Enhorabuena ${usuario.nombre}! 🎉</h2>
+            <p>Ha adquirido unos tickets<strong>...</strong>.</p>
+            <p>Sus números registrados son:</p>
+            <h3 style="color:#007bff;">${usuario.numeros}</h3>
+            <p>¡Verifica su compra en el sistema!</p>
+          </div>
+        `
+      });
+    } catch (err) {
+    }
 }
 
 

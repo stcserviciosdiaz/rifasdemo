@@ -11,13 +11,19 @@ import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { provideStorage, getStorage } from '@angular/fire/storage';
 import { environment } from './environments/environment';
 
+import { provideFunctions, getFunctions } from '@angular/fire/functions';
+import { provideHttpClient } from '@angular/common/http';
+
+
 bootstrapApplication(MainComponent, {
   providers: [
     provideRouter(routes),
     provideAnimations(),
+    provideHttpClient(),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
-    provideStorage(() => getStorage())
+    provideStorage(() => getStorage()),
+    provideFunctions(() => getFunctions())
   ]
 }).catch(err => console.error(err));

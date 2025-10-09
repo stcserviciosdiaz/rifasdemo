@@ -6,7 +6,18 @@
     justify-content: center;
 }
 
+.gap-10 {
+    gap: 2.5rem;
+}
 
+
+.w80 {
+    width: 80px;
+}
+
+.h80 {
+    height: 80px;
+}
 
 mat-accordion {
     margin-top: 50px;

@@ -18,6 +18,13 @@ body { margin: 0; font-family: 'Poppins', sans-serif; }
   font-size: 20px;
 }
 
+.title-pay{ 
+  background-image: linear-gradient(180deg, #f4db7e 0%, #be6b01 100%);
+  padding: 20px 20px;
+  text-align: center;
+  font-size: 25px;
+  color: white;
+}
 
 .btn-lottery:hover {
   background-color: #ffd180;
@@ -26,11 +33,25 @@ body { margin: 0; font-family: 'Poppins', sans-serif; }
   color: #000000 !important;
 }
 
+.progress {
+  height: 30px !important;
+}
+.bg-warning {
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.table-striped thead tr {
+    background-color: #ffa200;
+    color: white;
+    font-size: 15px;
+}
+
 .section-lottery{
   background-color: #ffa200;
   border-color: #ffa200;
   box-shadow: 0 0 18px #ffa200;
-  font-size: 18px;
+  font-size: 24px;
   font-family: 'Poppins', sans-serif;
   font-weight: 800;
   text-transform: uppercase;
@@ -86,6 +107,9 @@ body { margin: 0; font-family: 'Poppins', sans-serif; }
 }
 .fx-14{
   font-size: 14px;
+}
+.fx-13{
+  font-size: 13px;
 }
 .fx-16{
   font-size: 16px;

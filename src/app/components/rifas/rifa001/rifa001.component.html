@@ -119,29 +119,46 @@
       LISTA DE BOLETOS
     </h3>
     <p><i class="fa fa-info-circle"></i> Min. 2 tickets por compra</p>
-    <p class="lead pb-4">¡Experimenta la Fiebre de Premios en Nuestra Gran Rifa de Apertura! Gana Motos, Teléfonos y Premios en Efectivo!.</p>
+    <p class="lead pb-4">¡Experimenta la Fiebre de Premios en Nuestra Gran Rifa de Apertura! Gana Electrodomésticos, Teléfonos y Premios en Efectivo!.</p>
   </div>
-  <div class="container">
-    <table class="table" >
-      <tbody>
-        <tr>
-          <th class="col-md-1 col-2 d-blog text-center cursor-pointer" 
-              *ngFor="let item of items"
-              [ngClass]="{'disabled': isDisabled(item.id)}"
-              (click)="elegirnumero(item.id, item.price)"
-              [class.selected]="numeroelegido.includes(item.id)">
-              <input
-                  [disabled]="isDisabled(item.id)"
-                  class="d-none"
-                  [checked]="numeroelegido.includes(item.id)"
-                  type="checkbox">
-                  
-              {{item.id}}
-          </th>
-        </tr>
-      </tbody>
-    </table>
-    <div class="text-center">
+  <div class="container cuadrorifa">
+    <div class="">
+      <div class="overflow-auto" style="max-height: 300px;">
+        <table class="table">
+          <tbody>
+            <tr>
+              <th class="col-md-1 col-2 d-blog text-center cursor-pointer" 
+                  *ngFor="let item of paginatedItems"
+                  [ngClass]="{'disabled': isDisabled(item.id)}"
+                  (click)="elegirnumero(item.id, item.price)"
+                  [class.selected]="numeroelegido.includes(item.id)">
+                <input
+                    [disabled]="isDisabled(item.id)"
+                    class="d-none"
+                    [checked]="numeroelegido.includes(item.id)"
+                    type="checkbox">
+                {{ item.id }}
+              </th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+
+      <!-- Controles de paginación -->
+      <p class="text-center mb-0"><i class="fa fa-info-circle"></i> Busca tu número en el siguiente</p>
+      <p class="text-center"> << Inicial  -   Siguiente >> </p>
+      <div class="pagination pb-4">
+        <button *ngFor="let page of [].constructor(totalPages); let i = index" 
+                (click)="changePage(i + 1)"
+                [class.active]="currentPage === (i + 1)">
+          {{ i + 1 }}
+        </button>
+      </div>
+
+    </div>
+    
+    <div class="text-center pt-4">
       <h3 class="title-loterry">
         <i class="fa fa-check-circle" aria-hidden="true"></i> 
         Seleccionados
@@ -156,7 +173,7 @@
       </div>
       <div class="title-loterry">
         <p class="title-price">Total: $  {{ getTotalPrice() }}</p>
-        <em>Precio de Boleto</em><s> $2</s>
+        <em class="fx-30">Precio de Boleto <s>$</s>3</em>
       </div>
     </div>
   </div>
@@ -180,9 +197,16 @@
             formControlName="nombre"
             placeholder="Nombres y Apellidos" 
             required>
+            
+            <!-- Validaciones -->
             <div class="alert alert-danger mt-2" 
               *ngIf="this.userForm.get('nombre')?.errors?.['required']" [hidden]="nombre.valid || nombre.pristine">
               (El nombre no puede quedar vacío)
+            </div>
+            <div *ngIf="userForm.get('nombre')?.touched && userForm.get('nombre')?.invalid" class="error">
+              <div class="alert alert-danger" *ngIf="userForm.get('nombre')?.errors?.['required']">El nombre es obligatorio.</div>
+              <div class="alert alert-danger" *ngIf="userForm.get('nombre')?.errors?.['minlength']">Debe tener al menos 3 caracteres.</div>
+              <div class="alert alert-danger" *ngIf="userForm.get('nombre')?.errors?.['pattern']">Solo se permiten letras y espacios.</div>
             </div>
         </div>
         <div class="col-md-6">
@@ -193,26 +217,56 @@
               <option value="" disabled selected>+00</option>
               <option *ngFor="let codigo of codigosDeArea" [value]="codigo">{{ codigo }}</option>
             </select>
-  
+            
             <input type="text" 
               formControlName="celular"
               class="form-control w-100"  
               placeholder="Celular"
               required>
+
           </div>
-
-             <!-- Validaciones -->
-             <div class="alert alert-danger" *ngIf="celular?.invalid && (celular?.dirty || celular?.touched)">
-              <small  *ngIf="celular?.errors?.['required']">Se requiere número de teléfono.</small>
-              <small  *ngIf="celular?.errors?.['pattern']">Formato de número de teléfono no válido.</small>
-            </div>
-            <div class="alert alert-danger mt-2" *ngIf="codigoArea?.invalid && (codigoArea?.dirty || codigoArea?.touched)">
-              <small>Debes seleccionar un código de área.</small>
-            </div>
-
-           
+              <!-- Validaciones Celular -->
+              <div *ngIf="userForm.get('celular')?.touched && userForm.get('celular')?.invalid" class="error">
+                <div class="alert alert-danger" *ngIf="userForm.get('celular')?.errors?.['required']">El celular es obligatorio.</div>
+                <div class="alert alert-danger" *ngIf="userForm.get('celular')?.errors?.['pattern']">Número inválido. Solo se permiten de 7 a 15 dígitos.</div>
+              </div>
+              <!-- Validaciones Codigo-->
+               <div *ngIf="userForm.get('codigoArea')?.touched && userForm.get('codigoArea')?.invalid" class="error">
+                <div class="alert alert-danger" *ngIf="userForm.get('codigoArea')?.errors?.['required']">El código de área es obligatorio.</div>
+                <div class="alert alert-danger" *ngIf="userForm.get('codigoArea')?.errors?.['minlength']">Mínimo 2 dígitos.</div>
+                <div class="alert alert-danger" *ngIf="userForm.get('codigoArea')?.errors?.['maxlength']">Máximo 4 dígitos.</div>
+              </div>
+              
         </div>
-        
+      </div>
+
+      <div class="row pt-2">
+        <div class="col-md-6">
+          <input type="text" 
+            formControlName="cedula"
+            class="form-control w-100"  
+            placeholder="Cédula"
+          >
+          <!-- Validaciones cedula-->
+          <div *ngIf="userForm.get('cedula')?.touched && userForm.get('cedula')?.invalid" class="error">
+            <div class="alert alert-danger" *ngIf="userForm.get('cedula')?.errors?.['required']">La cédula es obligatoria.</div>
+            <div class="alert alert-danger" *ngIf="userForm.get('cedula')?.errors?.['pattern']">Debe contener entre 6 y 10 dígitos numéricos.</div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <input type="text" 
+            formControlName="correo"
+            class="form-control w-100"  
+            placeholder="Correo electrónico"
+          >
+          <!-- Validaciones correo-->
+          <div *ngIf="userForm.get('correo')?.touched && userForm.get('correo')?.invalid" class="error">
+            <div class="alert alert-danger" *ngIf="userForm.get('correo')?.errors?.['required']">El correo es obligatorio.</div>
+            <div class="alert alert-danger" *ngIf="userForm.get('correo')?.errors?.['email']">El formato del correo no es válido.</div>
+          </div>
+        </div>
+         
+          
       </div>
     </div>
 
@@ -221,39 +275,37 @@
         <i class="fa fa-credit-card-alt" aria-hidden="true"></i> 
         MODOS DE PAGO
       </h3>
-      <em class="pb-4">Transferencia o depósito</em>
+      <em class="pb-4">Pago Móvil</em>
       <div class="row col-12 mx-auto justify-content-center pt-2">
         <div class="col-md-8 row">
           <div class="btn-group col" role="group" aria-label="Basic radio toggle button group"
               *ngFor="let bancoelegido of listadebancos"
               [ngClass]="getClassbancoelegido(bancoelegido.id)">
-              
               <input 
                 type="radio" 
                 class="btn-check"
                 name="btnradio" 
                 id="btnradio{{bancoelegido.id}}"
                 autocomplete="off" 
-                [checked]="bancoelegidoId === bancoelegido.id">
-                
+                [checked]="bancoelegidoId === bancoelegido.id"
+                [disabled]="listadebancos.length === 1">
+
                 <label 
                 for="btnradio{{bancoelegido.id}}"
                 (click)="elegirbancos(bancoelegido.id)"
                 [style.opacity]="bancoelegidoId === bancoelegido.id ? 1 : 0.5">
-                
                 <img 
                 class="cursor-pointer img-bancos"
-                style="border-radius: 20%; width: 45%;"
+                style="border-radius: 20%; width: 50%;"
                 src="../../../assets/images/{{bancoelegido.imagen}}" 
                 alt="{{bancoelegido.banco}}">
-                
                 <div *ngIf="bancoelegidoId === bancoelegido.id">
                   <p class="fx-14 mb-0 pt-2">
                     {{bancoelegido.banco}}
                   </p>
                   <p class="fuente-banco mb-0">
-                    <em class="fx-10">NRO DE CUENTA</em><br>
-                    <b class="d-flex">
+                    <!-- <em class="fx-10">NRO PAGO MÓVIL DE CUENTA</em><br> -->
+                    <b class="">
                       <span class="mt-2">{{bancoelegido.numero}}</span>
                       <button class="btn-copy" type="button"
                       (click)="copiarNumeroCuenta($event)">
@@ -263,6 +315,10 @@
                   <p class="fuente-banco">
                     <em class="fx-10">TITULAR DE CUENTA</em><br>
                     {{bancoelegido.titular}}
+                  </p>
+                  <p class="fuente-banco" *ngIf="bancoelegido?.cedula">
+                    <em class="fx-10">Cédula</em><br>
+                    V.{{bancoelegido.cedula}}
                   </p>
                 </div>
             </label>
@@ -283,8 +339,7 @@
             class="btn btn-lottery" 
             data-bs-toggle="modal"
             [disabled]="isButtonDisabled" 
-            data-bs-target="#exampleModal"
-            (click)="$event.stopPropagation()">
+            data-bs-target="#exampleModal">
               Confirmar
           </button> 
         </div>

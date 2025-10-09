@@ -1,6 +1,5 @@
 {
   "hosting": {
-    "site": "rifas-democom",
     "public": "dist/standalone",
     "ignore": [
       "firebase.json",

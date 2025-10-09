@@ -22,8 +22,26 @@ import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 export class NavComponent {
 
 
-  
+  logodelarifa = [
+    { id:'1', 
+      imagen:'logo.png',
+    },
+  ];
 
+  idSeleccionado1 = '1';
+  idSeleccionado2 = '2';
+  idSeleccionado3 = '3';
 
+  loteriadelarifa = [
+    { id:'1', 
+      imagen:'conalot.png',
+    },
+    { id:'2', 
+      imagen:'tachira.png',
+    },
+    { id:'3', 
+      imagen:'supergana.png',
+    },
+  ];
 
 }

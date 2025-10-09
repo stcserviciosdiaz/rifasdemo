@@ -29,7 +29,7 @@
       </div>
     </nav>
 
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-4">
       <div class="chartjs-size-monitor">
         <div class="chartjs-size-monitor-expand">
           <div class=""></div>
@@ -38,19 +38,77 @@
           <div class=""></div>
         </div>
       </div>
+      <div class="d-flex">
+        🎯 Rifa Actual:
+        <div *ngFor="let namerifa of imagendelarifa">
+         <h4 *ngIf="rifaSeleccionada === namerifa.coleccion">{{ namerifa.name }}</h4>
+        </div>
+      </div>
       
-      <h2>
-        Rifa Demo          
-      </h2>
       <div class="table-responsive">
         <div class="">
           <h5>Datos de Registrados en compra de números</h5>
+          <div class="mb-3">
+            <!-- <div class="col-md-3">
+              <div class="card-counter danger">
+                <i class="fa fa-ticket"></i>
+                <span class="count-numbers"><strong></strong> / </span>
+                <span class="count-name">Boletos vendidos:</span>
+              </div>
+            </div> -->
+
+            <div class="row">
+              <div class="col-md-3">
+                <div class="card-counter primary">
+                  <i class="fa fa-ticket"></i>
+                  <span class="count-numbers">{{ totalBoletosVendidos }} / {{ totalBoletosDisponibles }}</span>
+                  <span class="count-name">Boletos vendidos:</span>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <div class="card-counter danger">
+                  <i class="fa fa-ticket"></i>
+                  <span class="count-name">Usuario con + numeros</span>                
+                  <li class="topUsuarios" *ngFor="let u of topUsuarios">
+                    {{ u.nombre }} <br>({{ u.cantidadBoletos }} Tickes)
+                  </li>
+                </div>
+              </div>
+
+              <!-- <div class="col-md-3">
+                <div class="card-counter success">
+                  <i class="fa fa-database"></i>
+                  <span class="count-numbers">6875</span>
+                  <span class="count-name">Data</span>
+                </div>
+              </div> -->
+
+              <div class="col-md-3">
+                <div class="card-counter info">
+                  <i class="fa fa-users"></i>
+                  <span class="count-numbers">{{ totalUsuarios }}</span>
+                  <span class="count-name">Usuarios registrados</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          📊 Progreso de la Rifa
+          <div class="progress">
+              <div class="progress-bar progress-bar-striped bg-warning" 
+                  role="progressbar" 
+                  [style.width.%]="progressPercentage" 
+                  aria-valuemin="0" 
+                  aria-valuemax="100">
+                {{progressPercentage.toFixed(0)}}%
+              </div>
+            </div>
 
           <button class="btn btn-danger mb-3" (click)="cerrarSesion()">
-            Cerrar sesión
+            <i class="fa fa-sign-out"></i> Cerrar sesión
           </button>
-          <button class="btn btn-success mb-3 mx-2" (click)="exportarExcel()">Exportar Excel</button>
-          <button class="btn btn-primary mb-3" (click)="exportarPDF()">Exportar PDF</button>
+          <button class="btn btn-success mb-3 mx-2" (click)="exportarExcel()">Excel</button>
+          <button class="btn btn-primary mb-3" (click)="exportarPDF()">PDF</button>
           
           <!-- Filtro -->
           <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
@@ -64,38 +122,44 @@
           </form>
 
           <div class="table-responsive">
-            <table class="table table-striped table-sm">
+            <table class="table table-striped table-sm fx-13">
               <thead>
                 <tr>
+                  <th scope="col">#</th>
                   <th scope="col">Nombre</th>
-                  <th scope="col">Código de Área</th>
-                  <th scope="col">Celular</th>
+                  <th scope="col">Área</th>
+                  <th scope="col">Teléfono</th>
+                  <th scope="col">Correo</th>
                   <th scope="col">Números comprados</th>
-                  <th scope="col">Notificaciones</th>
-                  <th scope="col">Confirmaciones</th>
+                  <th scope="col">Acción</th>
+                  <th scope="col">Estatus</th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let u of usuariosFiltrados; let i = index" 
+                <tr *ngFor="let u of usuariosFiltradosPaginados; let i = index" 
                     [class.bloqueado]="u.bloqueado" 
                     [attr.id]="'ID_DIV_' + i">
-
-                  <!-- Contenido con texto resaltado -->
+                  <td>{{ u.numberuser}}</td>
                   <td [innerHTML]="resaltarTexto(u.nombre)"></td>
                   <td>{{ u.codigoArea }}</td>
                   <td>{{ u.celular }}</td>
+                  <td>{{ u.correo }}</td>
                   <td [innerHTML]="resaltarTexto(u.numeros)"></td>
 
                   <td>
-                    <button class="btn btn-sm btn-outline-danger" (click)="eliminarRegistro(i)" [disabled]="u.bloqueado">
-                      <i class="fa fa-trash-o" aria-hidden="true"></i>
-                    </button>
+                      <button 
+                        class="btn btn-sm btn-outline-danger"
+                        (click)="eliminarRegistro(u, i)">
+                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                      </button>                   
                     <button class="btn btn-sm btn-outline-success"
                             [disabled]="u.bloqueado || estaDeshabilitado(u.celular)"
                             [innerHTML]="obtenerTextoBoton(u.celular)"
                             (click)="notificarWhatsApp(u)">
                     </button>
-                    <button class="btn btn-sm btn-outline-info">
+                    <button 
+                      class="btn btn-sm btn-outline-info"
+                      (click)="enviarCorreo(u)">
                       <i class="fa fa-envelope" aria-hidden="true"></i>
                     </button>
                     <button class="btn btn-sm btn-outline-primary" (click)="printDiv('ID_DIV_' + i)">
@@ -110,7 +174,7 @@
                             [(ngModel)]="u.bloqueado"
                             (change)="onSwitchChange(u)">
                       <label class="form-check-label fx-12" [for]="'switch-' + i">
-                        {{ u.bloqueado ? 'Confirmado' : 'Confirmar' }}
+                        {{ u.bloqueado ? 'Aprobado' : 'Pendiente' }}
                       </label>
                     </div>
                   </td>
@@ -118,6 +182,15 @@
               </tbody>
             </table>
           </div>
+
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <button class="btn btn-secondary" (click)="paginaAnterior()" [disabled]="paginaActual === 1">Anterior</button>
+
+            <span>Página {{ paginaActual }} de {{ totalPaginas }}</span>
+
+            <button class="btn btn-secondary" (click)="paginaSiguiente()" [disabled]="paginaActual === totalPaginas">Siguiente</button>
+          </div>
+
         </div>
       </div>
     </main>
@@ -132,8 +205,5 @@
 
 
 
-<div class="container">
-  
 
-</div> 
 

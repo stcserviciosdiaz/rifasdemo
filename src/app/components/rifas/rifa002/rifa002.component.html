@@ -149,19 +149,31 @@
       Compra aquí tus boletos
     </h3>
     <div class="">
-      <p><i class="fa fa-info-circle"></i> Min. 2 tickets por compra</p>
       <span class="badge bg-dark">
-        <i class="fa fa-ticket fa-lg" style="color: gold;"></i>  Precio por 1 ticket: 
-        <span class="">1 $USD
-        </span>
+        <i class="fa fa-ticket fa-lg" style="color: gold;"></i>  Compra min. 2 Tickets: 
       </span>
+      <span class="badge bg-dark mx-1">
+        <i class="fa fa-ticket fa-lg" style="color: gold;"></i>  
+        Precio por 1 ticket: 
+        <span class="">2.25 $USD</span>
+      </span>
+      <span class="badge bg-dark mx-1">
+        <i class="fa fa-dollar fa-lg" style="color: green;"></i>
+        Bs <span class="priceVES">306.00</span> 
+      </span>
+      <span class="badge bg-dark mx-1">
+        <i class="fa fa-dollar fa-lg" style="color: green;"></i>
+        USD <span class="priceUSD">2.25</span> 
+      </span>
+
+
     </div>
     
-    <p class="lead pb-4">¡Experimenta la Fiebre de Premios en Nuestra Gran Rifa de Apertura! Gana Motos, Teléfonos y Premios en Efectivo!.</p>
+    <p class="lead pb-4 d-none">¡Experimenta la Fiebre de Premios en Nuestra Gran Rifa de Apertura! Gana Motos, Teléfonos y Premios en Efectivo!.</p>
   </div>
   <div class="container">
     
-    <div class="d-grid col-12 col-md-4 text-center gap-3 mx-auto">
+    <div class="d-none col-12 col-md-4 text-center gap-3 mx-auto ">
       <div class="">
         <button 
           *ngFor="let opcion of [2, 5, 10, 20, 30, 50]"
@@ -172,15 +184,18 @@
         </button>
       </div>
     </div>
-    <div class="d-grid col-12 col-md-4 text-center mx-auto">
-      <p class="">Total a Pagar</p>
-      <p class="section-lottery">Bs {{ totalPagar }}</p>
-    </div>
 
-    <div class="d-flex items-center justify-content-center my-4 gap-2">
+    <div class="d-flex col-12 col-md-6 text-center mx-auto w-100 justify-content-center pt-3 pb-3">
       <button class="btn-cantidad" (click)="restarCantidad()">−</button>
       <input class="text-center w-16 font-bold" [value]="cantidadSeleccionada" readonly>
       <button class="btn-cantidad" (click)="sumarCantidad()">+</button>
+    </div>
+
+    <div class="d-grid col-12 col-md-6 text-center mx-auto">
+      <p class="">Total a Pagar</p>
+      <p class="section-lottery">MONTO A TRANSFERIR<br>
+        BS: {{ totalPagar }}
+      </p>
     </div>
 
   </div>
@@ -218,7 +233,7 @@
             </div>
         </div>
         <div class="col-md-6">
-          <label  class="form-label">Celular *</label>
+          <label  class="form-label">Teléfono *</label>
 
           <div class="d-flex">
             <select class="form-select w-20" formControlName="codigoArea">
@@ -229,7 +244,7 @@
             <input type="text" 
               formControlName="celular"
               class="form-control w-100"  
-              placeholder="Celular"
+              placeholder="Teléfono"
               required>
 
           </div>
@@ -303,7 +318,7 @@
                 (click)="elegirbancos(bancoelegido.id)"
                 [style.opacity]="bancoelegidoId === bancoelegido.id ? 1 : 0.5">
                 
-                <img 
+                 <img 
                 class="cursor-pointer img-bancos"
                 style="border-radius: 20%; width: 45%;"
                 src="../../../assets/images/{{bancoelegido.imagen}}" 
@@ -313,16 +328,23 @@
                   <p class="fx-14 mb-0 pt-2">
                     {{bancoelegido.banco}}
                   </p>
-                  <p class="fuente-banco mb-0">
-                    <em class="fx-10">NRO DE CUENTA</em><br>
-                    <b class="d-flex">
-                      <span class="mt-2">{{bancoelegido.numero}}</span>
+                  <div class="fuente-banco mb-0">
+                    <em class="fx-10">INFORMACIÓN DE LA CUENTA</em>
+                    <div class="">
+                      <span *ngIf="bancoelegido?.numero" 
+                            [ngClass]="{ 'active': bancoelegido.numero }" 
+                            class="mt-2">{{bancoelegido.numero}}<br>
+                      </span>
+                      <span class="mt-2" *ngIf="bancoelegido?.cedula">{{bancoelegido.cedula}}<br></span>
+                      <span class="mt-2" *ngIf="bancoelegido?.telefono">{{bancoelegido.telefono}}</span>
+                      <span class="mt-2" *ngIf="bancoelegido?.correo">{{bancoelegido.correo}}</span> 
                       <button class="btn-copy" type="button"
-                      (click)="copiarNumeroCuenta($event)">
-                      <i class="fa fa-files-o" aria-hidden="true"></i></button>
-                    </b>
-                  </p>
-                  <p class="fuente-banco">
+                        (click)="copiarNumeroCuenta($event)">
+                        <i class="fa fa-files-o" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <p class="fuente-banco" *ngIf="bancoelegido?.titular">
                     <em class="fx-10">TITULAR DE CUENTA</em><br>
                     {{bancoelegido.titular}}
                   </p>
@@ -414,21 +436,22 @@
         <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
       </div>
       <div class="modal-body">
-        <p style="word-wrap: break-word;">Tus Boletos números {{ numeroelegido  }} fueron registrados correctamente!</p>
-        <p class="title-loterry">Precio por número.: <em style="font-weight: 200;">$20</em></p>
-        <p class="title-loterry">Precio Total.:<em style="font-weight: 200;">$ {{ getTotalPrice() }}</em></p>
-        <p>El evento se transmitirá el día 30 DIC 2024 a las 08:00 PM en nuestro canal.</p>
+        <p style="word-wrap: break-word;">Tus Boletos números {{ numeroelegido   }} fueron registrados correctamente!</p>
+        <p class="title-loterry">Precio por número.: <em style="font-weight: 200;">$ 0.6</em></p>
+        <p class="title-loterry title-pay">Total a pagar.:<em style="font-weight: 200;">$ {{ getTotalPrice() }}</em></p>
+        <p>El sorteo será el 2 de Noviembre. Resultados por el super gana a la 1:00pm de la lotería del Táchira</p>
         <p *ngIf="bancoelegido">
-        Realiza tu pago directamente en nuestra cuenta bancaria elegida: <br>
+        Realiza tu pago directamente en nuestra cuenta elegida: <br>
           Nombre de Banco:
-          <strong>{{ bancoelegido.banco }}</strong><br>
-          Número de Cuenta: 
-          <strong>{{ bancoelegido.numero }}</strong><br>
-          Titular de la Cuenta: 
-          <strong>{{ bancoelegido.titular }}</strong>
+          <strong *ngIf="bancoelegido?.banco">{{ bancoelegido.banco }}<br></strong>
+          <strong *ngIf="bancoelegido?.numero">Numero de Transferencia: {{ bancoelegido.numero }}<br></strong>
+          <strong *ngIf="bancoelegido?.cedula">Cédula: {{ bancoelegido.cedula }}<br></strong>
+          <strong *ngIf="bancoelegido?.telefono">Teléfono: {{ bancoelegido.telefono }}<br></strong>  
+          <strong *ngIf="bancoelegido?.correo">Correo: {{ bancoelegido.correo }}<br></strong>
+          <strong *ngIf="bancoelegido?.titular">Titular: {{ bancoelegido.titular }}</strong>
         </p>
           <p>Por favor, usa el número del pedido como referencia de pago.</p>
-          <p><strong>Debes enviar el comprobante de pago vía Whatsapp a Soporte +322323232323</strong></p>
+          <p><strong>Debes enviar el comprobante de pago vía Whatsapp a Soporte +58 000 000 00</strong></p>
           <p>Si no envías el pago dentro de las 24 horas, tus números de boletos serán liberados automáticamente.</p>
           <a 
             class="btn btn-success"
@@ -441,7 +464,7 @@
         No has elegido un numero<br>
       </div>
       <div class="modal-footer">
-        <a class="btn btn-success" href="https://rifas-democom.web.app/rifa002">
+        <a class="btn btn-success" href="https://rifas-democom.web.app/rifa001">
           Seguir comprando
         </a>
         

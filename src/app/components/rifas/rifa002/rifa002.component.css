@@ -270,10 +270,11 @@ button.btn-copy {
 input.text-center.w-16.font-bold {
     background: transparent;
     outline: none;
-    padding: 10px;
     border-radius: 1px;
     border: 1px solid #00000012;
-    color: black;
+    font-weight: 900;
+    font-size: 30px;
+    width: 40%;
 }
 .btn-boleto.active {
   background-color: #ffa200;
@@ -284,12 +285,14 @@ input.text-center.w-16.font-bold {
   font-weight: normal;
 }
 .btn-cantidad {
-  width: 40px;
-  height: 40px;
-  font-size: 24px;
-  background: #eee;
+  width: 100px;
+  height: 50px;
+  font-size: 30px;
+  background: #ffa200;
   border: none;
   border-radius: 6px;
+  padding: 5px 20px 7px 20px;
+  font-weight: 900;
 }
 .btn-comprar {
   background-color: #ffa200;
